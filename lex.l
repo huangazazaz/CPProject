@@ -1,92 +1,163 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
-
-/* Error reporting */
-void yyerror(const char *s);
+    #include "node.hpp"
+    int isError = 0;
+    #define LEXER_ERROR_OUTPUT stdout
 %}
-
-/* Definitions for regular expressions */
-%x COMMENT
-
-DIGIT       [0-9]
-HEX         [0-9a-fA-F]
-LETTER      [a-zA-Z_]
-INT         {DIGIT}+
-HEX_INT     0[xX]{HEX}+
-FLOAT       {DIGIT}+"."{DIGIT}*
-CHAR        '\\x'{HEX}|'\\'?.'
-ID          {LETTER}({LETTER}|{DIGIT})*
-
+%{
+    #include"syntax.tab.h"
+    /* library inclusions */ 
+    int yycolumn = 1;
+    #define YY_USER_ACTION \
+        yylloc.first_line = yylineno; \
+        yylloc.last_line = yylineno; \
+        yylloc.first_column = yycolumn; \
+        yylloc.last_column = yycolumn + yyleng;\
+        yycolumn += yyleng;
+    //INT32_10 [+-]?(0|([1-9]{digit}*))
+    /*
+    it seems that in bison and flex,
+    the YYLTYPE's definition is different
+    one is a struct and another look like the before one's pointer
+    */
+    //UFLOAT32 {digit}+(.{digit}+)?([Ee][+-]?{digit}+)?
+    //%option c++
+%}
+%option noyywrap
+%option yylineno
+letters [A-Za-z]
+letters_ [A-Za-z_]
+digit [0-9]
+digit_16 [0-9a-fA-F]
+UINT32_10 (0|([1-9]{digit}*))
+UINT32_16 0[xX](0|[1-9a-fA-F]{digit_16}*)
+UINT32_16_error_more_0 0[xX](0{2,}{digit_16}*)
+UINT32_16_error_illgeal_char 0[xX]([1-9a-fA-F]{digit_16}*[g-z]{digit_16}*)
+UINT32 {UINT32_10}|{UINT32_16}
+UFLOAT32 {digit}+\.{digit}+
+ID {letters_}({letters_}|{digit}){0,31}
+CHAR '.'
+CHAR_16 '\\x(0|[1-9a-fA-F]{digit_16})'
+CHAR_16_more0 '\\x00{digit_16}*'
+CHAR_16_illgeal_char '\\x([1-9a-fA-F]){digit_16}*[g-z]{digit_16}*'
+CHAR_16_toolong '\\x{digit_16}{3,}'
 %%
-
-/* Keywords */
-"int"            { return TYPE; }
-"float"          { return TYPE; }
-"char"           { return TYPE; }
-"struct"         { return STRUCT; }
-"if"             { return IF; }
-"else"           { return ELSE; }
-"while"          { return WHILE; }
-"return"         { return RETURN; }
-
-/* Operators and delimiters */
-"."             { return DOT; }
-";"             { return SEMI; }
-","             { return COMMA; }
-"="             { return ASSIGN; }
-"<"             { return LT; }
-"<="            { return LE; }
-">"             { return GT; }
-">="            { return GE; }
-"!="            { return NE; }
-"=="            { return EQ; }
-"+"             { return PLUS; }
-"-"             { return MINUS; }
-"*"             { return MUL; }
-"/"             { return DIV; }
-"&"             { return BAND; }
-"&&"            { return AND; }
-"|"             { return BOR; }
-"||"            { return OR; }
-"^"             { return XOR; }
-"!"             { return NOT; }
-"("             { return LP; }
-")"             { return RP; }
-"["             { return LB; }
-"]"             { return RB; }
-"{"             { return LC; }
-"}"             { return RC; }
-
-/* Literals */
-{INT}            { yylval.intval = atoi(yytext); return INT; }
-{HEX_INT}        { yylval.intval = strtol(yytext, NULL, 16); return INT; }
-{FLOAT}          { yylval.floatval = atof(yytext); return FLOAT; }
-{CHAR}           { yylval.charval = yytext[1]; return CHAR; }
-
-/* Identifier */
-{ID}             { return ID; }
-
-/* Whitespace */
-[ \t\n\r]+       { /* Skip whitespace */ }
-
-/* Comments */
-"/*"            { BEGIN(COMMENT); }
-<COMMENT>"*/"   { BEGIN(INITIAL); }
-<COMMENT>.       { /* Ignore comment content */ }
-
-/* Error handling */
-"@"|"#"         { fprintf(stderr, "Error: Undefined token '%s'\n", yytext); }
-0[xX][^0-9a-fA-F]+  { fprintf(stderr, "Error: Illegal hex integer '%s'\n", yytext); }
-"\\x"[^0-9a-fA-F] { fprintf(stderr, "Error: Illegal hex char '%s'\n", yytext); }
-.                 { fprintf(stderr, "Error: Unknown token '%s'\n", yytext); }
-
-%%
-
-int yywrap() {
-    return 1;
+"//" {
+    char c = yyinput();
+    while(c!='\n'){c=yyinput();}
 }
-
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
-} 
+"\n" {yycolumn = 1;}
+[ \t\r]+ {}
+"int" {
+    yylval.Node_value = new Node("TYPE","int",Node_TYPE::STRING);
+    return TYPE;
+}
+"float" {
+    yylval.Node_value = new Node("TYPE","float",Node_TYPE::STRING);
+    return TYPE;
+}
+"char" {
+    yylval.Node_value = new Node("TYPE","char",Node_TYPE::STRING);
+    return TYPE;
+}
+"struct" {yylval.Node_value = new Node("STRUCT");return STRUCT;}
+"if" {yylval.Node_value = new Node("IF");return IF;}
+"else" {yylval.Node_value = new Node("ELSE");return ELSE;}
+"while" {yylval.Node_value = new Node("WHILE");return WHILE;}
+"return" {yylval.Node_value = new  Node("RETURN");return RETURN;}
+"." {yylval.Node_value = new  Node("DOT");return DOT;}
+";" {yylval.Node_value = new  Node("SEMI");return SEMI;}
+"," {yylval.Node_value = new  Node("COMMA");return COMMA;}
+"=" {yylval.Node_value = new  Node("ASSIGN");return ASSIGN;}
+"<" {yylval.Node_value = new  Node("LT");return LT;}
+"<=" {yylval.Node_value = new  Node("LE");return LE;}
+">" {yylval.Node_value = new  Node("GT");return GT;}
+">=" {yylval.Node_value = new  Node("GE");return GE;}
+"!=" {yylval.Node_value = new  Node("NE");return NE;}
+"==" {yylval.Node_value = new  Node("EQ");return EQ;}
+"+" {yylval.Node_value = new  Node("PLUS");return PLUS;}
+"+=" {yylval.Node_value = new  Node("PLUS_ASSIGN");return PLUS_ASSIGN;}
+"-" {yylval.Node_value = new  Node("MINUS");return MINUS;}
+"-=" {yylval.Node_value = new  Node("MINUS_ASSIGN");return MINUS_ASSIGN;}
+"*" {yylval.Node_value = new  Node("MUL");return MUL;}
+"*=" {yylval.Node_value = new  Node("MUL_ASSIGN");return MUL_ASSIGN;}
+"/" {yylval.Node_value = new  Node("DIV");return DIV;}
+"/=" {yylval.Node_value = new  Node("DIV_ASSIGN");return DIV_ASSIGN;}
+"&&" {yylval.Node_value = new  Node("AND");return AND;}
+"&" {yylval.Node_value = new  Node("BAND");return BAND;}
+"||" {yylval.Node_value = new  Node("OR");return OR;}
+"|" {yylval.Node_value = new  Node("BOR");return BOR;}
+"^" {yylval.Node_value = new  Node("XOR");return XOR;}
+"!" {yylval.Node_value = new  Node("NOT");return NOT;}
+"(" {yylval.Node_value = new  Node("LP");return LP;}
+")" {yylval.Node_value = new  Node("RP");return RP;}
+"[" {yylval.Node_value = new  Node("LB");return LB;}
+"]" {yylval.Node_value = new  Node("RB");return RB;}
+"{" {yylval.Node_value = new  Node("LC");return LC;}
+"}" {yylval.Node_value = new  Node("RC");return RC;}
+{ID} {
+    yylval.Node_value = new  Node("ID",yytext,Node_TYPE::STRING);
+    return ID;
+}
+{UFLOAT32} {
+    yylval.Node_value = new Node(static_cast<float>(atof(yytext)));
+    return FLOAT;
+}
+{UINT32_10} {
+    yylval.Node_value = new Node(atoi(yytext));
+    return INT;
+}
+{UINT32_16} {
+    yylval.Node_value = new Node(static_cast<int>(strtol(yytext,nullptr,0)));
+    return INT;
+}
+{UINT32_16_error_more_0} {
+    isError=1;
+    fprintf(LEXER_ERROR_OUTPUT, "Error type A at Line %s: Illgeal UINT32 hex-Leading 0 \n", yytext);
+    return ILLEGAL_TOKEN;
+}
+{UINT32_16_error_illgeal_char} {
+    isError=1;
+    fprintf(LEXER_ERROR_OUTPUT, "Error type A at Line %s: UINT32_16_error_illgeal_char \n", yytext);
+    return ILLEGAL_TOKEN;
+}
+{CHAR} {
+    yylval.Node_value = new Node("CHAR",yytext,Node_TYPE::STRING);
+    //yylval.Node_value->print(0);
+    return CHAR;
+}
+{CHAR_16} {
+    //std::cout << yyleng << std::endl;
+    yylval.Node_value = new Node("CHAR",yytext,Node_TYPE::STRING);
+    //yylval.Node_value->print(0);
+    return CHAR;
+}
+{CHAR_16_more0} {
+    isError=1;
+    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    return ILLEGAL_TOKEN;
+}
+{CHAR_16_illgeal_char} {
+    isError=1;
+    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    return ILLEGAL_TOKEN;
+}
+{CHAR_16_toolong} {
+    isError=1;
+    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    return ILLEGAL_TOKEN;
+}
+[^0-9a-zA-Z_'\\\(\)\[\]\{\}\;\,\+\-\*\/] {
+    isError=1;
+    // illgeal characters
+    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    //yymore();
+    return ILLEGAL_TOKEN;
+}
+[0-9]*{ID} {
+    isError=1;
+    // Illgeal ID
+    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    // TODO
+    return ID;
+}
+%%
