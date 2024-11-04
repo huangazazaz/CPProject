@@ -8,6 +8,7 @@
 INT     -> /* integer in 32-bits (decimal or hexadecimal) */
 FLOAT   -> /* floating point number (only dot-form) */
 CHAR    -> /* single character (printable or hex-form) */
+BOOLEAN    -> /* boolean value */
 ID      -> /* identifier */
 TYPE    -> int | float | char
 STRUCT  -> struct
@@ -19,6 +20,10 @@ DOT     -> .
 SEMI    -> ;
 COMMA   -> ,
 ASSIGN  -> =
+PLUS_ASSIGN  -> +=
+MINUS_ASSIGN  -> -=
+MUL_ASSIGN  -> *=
+DIV_ASSIGN  -> /=
 LT      -> <
 LE      -> <=
 GT      -> >

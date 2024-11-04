@@ -1,9 +1,6 @@
-//
-// Created by nanos on 2020/11/7.
-//
 
-#ifndef CS323_COMPILERS_PROJECT2_SRC_TYPE_HPP
-#define CS323_COMPILERS_PROJECT2_SRC_TYPE_HPP
+#ifndef TYPE_HPP
+#define TYPE_HPP
 #include <string>
 #include <variant>
 #include <vector>
@@ -13,10 +10,15 @@ using std::string;
 using std::variant;
 using std::vector;
 
-enum class CATEGORY {
-    PRIMITIVE, ARRAY, STRUCTURE, FUNCTION
+enum class CATEGORY
+{
+    PRIMITIVE,
+    ARRAY,
+    STRUCTURE,
+    FUNCTION
 };
-enum PRIMI_VALUE {
+enum PRIMI_VALUE
+{
     Node_TYPE_VALUE = 0,
     ARRAY_POINTER_VALUE = 1,
     FieldList_POINTER_VALUE = 2
@@ -26,14 +28,16 @@ class Array;
 
 class FieldList;
 
-class Type {
+class Type
+{
     using PRIMI = variant<Node_TYPE, Array *, FieldList *>;
+
 public:
     string name;
     CATEGORY category = CATEGORY::PRIMITIVE;
     PRIMI type;
     Type *returnType = nullptr; // 存储返回值的类型
-    //vector<Type *> parms;
+    // vector<Type *> parms;
     static Type *getPrimitiveType(Node_TYPE type);
 
     static Type *getPrimitiveINT();
@@ -42,13 +46,15 @@ public:
 
     static Type *getPrimitiveCHAR();
 
+    static Type *getPrimitiveBOOLEAN();
+
     Type() = default;
 
     Type(string _name, CATEGORY _category, PRIMI _type);
-
 };
 
-class Array {
+class Array
+{
 public:
     Type *base;
     int size;
@@ -56,7 +62,8 @@ public:
     Array(Type *base, int size);
 };
 
-class FieldList {
+class FieldList
+{
 public:
     string name;
     Type *type = nullptr;
@@ -65,7 +72,6 @@ public:
     FieldList() = default;
 
     FieldList(string name, Type *type, FieldList *next);
-
 };
 
-#endif //CS323_COMPILERS_PROJECT2_SRC_TYPE_HPP
+#endif

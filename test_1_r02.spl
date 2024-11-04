@@ -1,12 +1,12 @@
-int test_1_r02()
+float test_1_r01()
 {
-  int a = 1;
-  int b = 2;
-  int c = 3;
-  int d = a | b;
-  int e = a & c;
-  int f = b ^ c;
-  d += a;
-  e -= b;
-  f *= c;
+  int a = 5- -1;
+  float f = -1.5;
+  bool b = 2 < 3;
+  char c = '@';
+  if(b){
+    return 2.3;
+  }
+  return 1.6;
+  
 }

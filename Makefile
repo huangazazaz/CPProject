@@ -19,9 +19,9 @@ CPP = $(GPP) $(CXX_FLAGS)
 .node: .prepare
 	$(CPP) -c node.cpp -o node.o
 	@ar -rc libnode.a node.o
-.yyerror: .prepare
-	$(CPP) -c yyerror_myself.cpp -o yyerror_myself.o
-	@ar -rc libyyerror_myself.a yyerror_myself.o
+.ierror: .prepare
+	$(CPP) -c ierror.cpp -o ierror.o
+	@ar -rc libierror.a ierror.o
 .type: .prepare
 	$(CPP) -c type.cpp -o type.o
 	@ar -rc libtype.a type.o
@@ -31,8 +31,8 @@ CPP = $(GPP) $(CXX_FLAGS)
 .visit: .prepare
 	$(CPP) -c visitSyntaxTree.cpp -o visitSyntaxTree.o
 	@ar -rc libvisitSyntaxTree.a visitSyntaxTree.o
-splc: .node .yyerror .type .semanticError .visit
-	$(CPP) main.cpp -static -L. -lnode -lyyerror_myself  \
+splc: .node .ierror .type .semanticError .visit
+	$(CPP) main.cpp -static -L. -lnode -lierror  \
     -lvisitSyntaxTree -lsemanticError -ltype  -o splc
 clean:
 	@rm -rf $(MAKE_PATH)/ lex.yy.c syntax.tab.* *.out *.o *.a *.so syntax.output splc

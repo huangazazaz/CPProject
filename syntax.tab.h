@@ -66,38 +66,39 @@ extern int yydebug;
     INT = 267,                     /* INT  */
     FLOAT = 268,                   /* FLOAT  */
     CHAR = 269,                    /* CHAR  */
-    ID = 270,                      /* ID  */
-    ASSIGN = 271,                  /* ASSIGN  */
-    PLUS_ASSIGN = 272,             /* PLUS_ASSIGN  */
-    MINUS_ASSIGN = 273,            /* MINUS_ASSIGN  */
-    MUL_ASSIGN = 274,              /* MUL_ASSIGN  */
-    DIV_ASSIGN = 275,              /* DIV_ASSIGN  */
-    XOR = 276,                     /* XOR  */
-    BOR = 277,                     /* BOR  */
-    OR = 278,                      /* OR  */
-    AND = 279,                     /* AND  */
-    BAND = 280,                    /* BAND  */
-    LT = 281,                      /* LT  */
-    LE = 282,                      /* LE  */
-    GT = 283,                      /* GT  */
-    GE = 284,                      /* GE  */
-    NE = 285,                      /* NE  */
-    EQ = 286,                      /* EQ  */
-    LOWER_MINUS = 287,             /* LOWER_MINUS  */
-    PLUS = 288,                    /* PLUS  */
-    MINUS = 289,                   /* MINUS  */
-    MUL = 290,                     /* MUL  */
-    DIV = 291,                     /* DIV  */
-    NOT = 292,                     /* NOT  */
-    LP = 293,                      /* LP  */
-    RP = 294,                      /* RP  */
-    LB = 295,                      /* LB  */
-    RB = 296,                      /* RB  */
-    DOT = 297,                     /* DOT  */
-    SEMI = 298,                    /* SEMI  */
-    COMMA = 299,                   /* COMMA  */
-    LC = 300,                      /* LC  */
-    RC = 301                       /* RC  */
+    BOOLEAN = 270,                 /* BOOLEAN  */
+    ID = 271,                      /* ID  */
+    ASSIGN = 272,                  /* ASSIGN  */
+    PLUS_ASSIGN = 273,             /* PLUS_ASSIGN  */
+    MINUS_ASSIGN = 274,            /* MINUS_ASSIGN  */
+    MUL_ASSIGN = 275,              /* MUL_ASSIGN  */
+    DIV_ASSIGN = 276,              /* DIV_ASSIGN  */
+    OR = 277,                      /* OR  */
+    AND = 278,                     /* AND  */
+    BOR = 279,                     /* BOR  */
+    XOR = 280,                     /* XOR  */
+    BAND = 281,                    /* BAND  */
+    LT = 282,                      /* LT  */
+    LE = 283,                      /* LE  */
+    GT = 284,                      /* GT  */
+    GE = 285,                      /* GE  */
+    NE = 286,                      /* NE  */
+    EQ = 287,                      /* EQ  */
+    LOWER_MINUS = 288,             /* LOWER_MINUS  */
+    PLUS = 289,                    /* PLUS  */
+    MINUS = 290,                   /* MINUS  */
+    MUL = 291,                     /* MUL  */
+    DIV = 292,                     /* DIV  */
+    NOT = 293,                     /* NOT  */
+    LP = 294,                      /* LP  */
+    RP = 295,                      /* RP  */
+    LB = 296,                      /* LB  */
+    RB = 297,                      /* RB  */
+    DOT = 298,                     /* DOT  */
+    SEMI = 299,                    /* SEMI  */
+    COMMA = 300,                   /* COMMA  */
+    LC = 301,                      /* LC  */
+    RC = 302                       /* RC  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -110,7 +111,7 @@ union YYSTYPE
 
     Node* Node_value;
 
-#line 114 "syntax.tab.h"
+#line 115 "syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

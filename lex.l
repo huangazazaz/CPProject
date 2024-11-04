@@ -59,6 +59,10 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
     yylval.Node_value = new Node("TYPE","char",Node_TYPE::STRING);
     return TYPE;
 }
+"bool" {
+    yylval.Node_value = new Node("TYPE","bool",Node_TYPE::STRING);
+    return TYPE;
+}
 "struct" {yylval.Node_value = new Node("STRUCT");return STRUCT;}
 "if" {yylval.Node_value = new Node("IF");return IF;}
 "else" {yylval.Node_value = new Node("ELSE");return ELSE;}
@@ -94,6 +98,18 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 "]" {yylval.Node_value = new  Node("RB");return RB;}
 "{" {yylval.Node_value = new  Node("LC");return LC;}
 "}" {yylval.Node_value = new  Node("RC");return RC;}
+"true" {
+    yylval.Node_value = new  Node(true);
+    return BOOLEAN;
+}
+"false" {
+    yylval.Node_value = new  Node(false);
+    return BOOLEAN;
+}
+{ID} {
+    yylval.Node_value = new  Node("ID",yytext,Node_TYPE::STRING);
+    return ID;
+}
 {ID} {
     yylval.Node_value = new  Node("ID",yytext,Node_TYPE::STRING);
     return ID;
