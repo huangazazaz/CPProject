@@ -110,10 +110,6 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
     yylval.Node_value = new  Node("ID",yytext,Node_TYPE::STRING);
     return ID;
 }
-{ID} {
-    yylval.Node_value = new  Node("ID",yytext,Node_TYPE::STRING);
-    return ID;
-}
 {UFLOAT32} {
     yylval.Node_value = new Node(static_cast<float>(atof(yytext)));
     return FLOAT;
