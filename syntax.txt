@@ -53,6 +53,10 @@ Dec -> VarDec
 
 /* Expression */
 Exp -> Exp ASSIGN Exp
+    | Exp PLUS_ASSIGN Exp
+    | Exp MINUS_ASSIGN Exp
+    | Exp MUL_ASSIGN Exp
+    | Exp DIV_ASSIGN Exp
     | Exp AND Exp
     | Exp BAND Exp
     | Exp OR Exp
