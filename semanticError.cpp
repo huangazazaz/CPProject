@@ -23,12 +23,12 @@ void functionRedefined(int lineNum, const std::string &name)
 
 void nonMatchTypeBothSide(int lineNum)
 {
-    printf("Error at Line %d: unmatching types on both sides of assignment\n", lineNum);
+    printf("Error at Line %d: unmatching types appear at both sides of the assignment operator\n", lineNum);
 }
 
 void rvalueLeftSetError(int lineNum)
 {
-    printf("Error at Line %d: left side in assignment is rvalue\n", lineNum);
+    printf("Error at Line %d: rvalue appears on the left-hand side of the assignment operator\n", lineNum);
 }
 
 void binaryOperatorNonNumber(int lineNum)
@@ -49,7 +49,7 @@ void invalidArgumentNumber(int lineNum, const std::string &name, int expect, int
 
 void invalidArgumentType(int lineNum, const std::string &name, const std::string &expect, const std::string &actually)
 {
-    printf("Error at Line %d: invalid argument types for %s, expect %s, got %s\n", lineNum, name.c_str(),
+    printf("Error at Line %d: invalid argument type for %s, expect %s, got %s\n", lineNum, name.c_str(),
            expect.c_str(), actually.c_str());
 }
 
@@ -70,7 +70,7 @@ void nonIntegerTypeIndexing(int lineNum)
 
 void nonStructFVariable(int lineNum)
 {
-    printf("Error at Line %d: accessing with non-struct variable\n", lineNum);
+    printf("Error at Line %d: accessing members of a non-struct variable\n", lineNum);
 }
 
 void noSuchMember(int lineNum, const std::string &name)

@@ -753,6 +753,7 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
         if (except != actually)
         {
             invalidArgumentNumber(lineNum, functionName, except, actually);
+            return;
         }
         int count = 0;
         while (count < std::min(except, actually))
@@ -760,7 +761,7 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
             count++;
             Type *paramType = fieldList->type;
             string argsName;
-            if (args->get_nodes(0, 0)->value.index() != Node_TYPE_VALUE)
+            if (args->get_nodes(0, 0)->value.index() != 0)
             {
                 if (paramType->category != CATEGORY::PRIMITIVE ||
                     paramType != args->get_nodes(0)->type
@@ -777,11 +778,12 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
             }
             if (symbolTable.count(argsName) == 0)
             {
-                continue;
             }
             else
             {
                 Type *argsType = symbolTable[argsName];
+                printf("%d\n", paramType->type.index());
+                printf("%d\n", argsType->type.index());
                 if (argsType->category == CATEGORY::FUNCTION)
                 {
                     argsType = argsType->returnType;

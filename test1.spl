@@ -1,0 +1,22 @@
+int global;
+struct my_struct
+{
+  int code;
+  char data;
+};
+
+
+// Lol this comment while doesnt make sense, should not output while for float int struct
+
+/**
+ * // Lol this comment while doesnt make sense, should not output while for float int struct
+ * // Lol this comment while doesnt make sense, should not output while for float int struct
+ * // Lol this comment while doesnt make sense, should not output while for float int struct
+ * // Lol this comment while doesnt make sense, should not output while for float int struct
+ */
+int test_1_r02()
+{
+  struct my_struct obj;
+  obj.code = global;
+  global = global + 1;
+}
