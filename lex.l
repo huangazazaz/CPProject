@@ -45,7 +45,9 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
     char c = yyinput();
     while(c!='\n'){c=yyinput();}
 }
+"/*"([^*]|\*+[^*/])*"*"+"/"  { /* Ignore the multi-line comment */ }
 "\n" {yycolumn = 1;}
+
 [ \t\r]+ {}
 "int" {
     yylval.Node_value = new Node("TYPE","int",Node_TYPE::STRING);
@@ -67,6 +69,7 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 "if" {yylval.Node_value = new Node("IF");return IF;}
 "else" {yylval.Node_value = new Node("ELSE");return ELSE;}
 "while" {yylval.Node_value = new Node("WHILE");return WHILE;}
+"for" {yylval.Node_value = new Node("FOR");return FOR;}
 "return" {yylval.Node_value = new  Node("RETURN");return RETURN;}
 "." {yylval.Node_value = new  Node("DOT");return DOT;}
 ";" {yylval.Node_value = new  Node("SEMI");return SEMI;}
