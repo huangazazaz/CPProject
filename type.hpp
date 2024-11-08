@@ -30,7 +30,7 @@ class FieldList;
 
 class Type
 {
-    using PRIMI = variant<Node_TYPE, Array *, FieldList *>;
+    using PRIMI = std::variant<Node_TYPE, Array *, FieldList *>;
 
 public:
     string name;

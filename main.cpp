@@ -25,8 +25,8 @@ int main(int argc, char **argv)
     }
     if (isError == 0)
     {
-        root_node->print(0);
-        std::cout << symbolTable.size() << std::endl;
+        // root_node->print(0);
+        // std::cout << symbolTable.size() << std::endl;
     }
     return 0;
 }
