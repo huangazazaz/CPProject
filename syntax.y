@@ -77,7 +77,7 @@ ExtDef: Specifier ExtDecList SEMI  {
     }
     | Specifier_FunDec_Recv CompSt {
 
-        printf("Extern def with function \n");
+        // printf("Extern def with function \n");
         $$=new Node("ExtDef",@$.first_line);
         $$->push_back($1->nodes[0],$1->nodes[1],$2);
         extDefVisit_SFC($$);
@@ -121,7 +121,7 @@ FunDec: ID LP VarList RP {
 
     $$=new Node("FunDec",@$.first_line); $$->push_back($1,$2,$3,$4);funDecVisit($$);
             string idName = std::get<string>($1->value);
-            printf("Func ID %s\n", idName.c_str() );
+            // printf("Func ID %s\n", idName.c_str() );
     }
     | ID LP RP  {
         $$=new Node("FunDec",@$.first_line); $$->push_back($1,$2,$3);funDecVisit($$);
@@ -175,7 +175,7 @@ DefList: {$$=new Node("DefList",@$.first_line,Node_TYPE::NOTHING);}
 // */
 Def: Specifier DecList SEMI {
 
-    printf("Definition of variable detected\n");
+    // printf("Definition of variable detected\n");
     $$=new Node("Def",@$.first_line);
     $$->push_back($1,$2,$3);
     defVisit($$);
