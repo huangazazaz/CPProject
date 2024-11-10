@@ -782,8 +782,6 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
             else
             {
                 Type *argsType = symbolTable[argsName];
-                printf("%d\n", paramType->type.index());
-                printf("%d\n", argsType->type.index());
                 if (argsType->category == CATEGORY::FUNCTION)
                 {
                     argsType = argsType->returnType;
