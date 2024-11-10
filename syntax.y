@@ -3,13 +3,16 @@
     #include <unordered_map>
     #include "type.hpp"
     #include "visitSyntaxTree.hpp"
+    
     using std::string;
     using std::unordered_map;
+    #define YYDEBUG 1
     #define YY_NO_UNPUT
     #include "lex.yy.c"
     void yyerror(const char *s);
     void lineinfor(void);
     Node* root_node;
+
     unordered_map<string,Type*> symbolTable;
     extern int isError;
     #define PARSER_error_OUTPUT stdout
@@ -44,6 +47,8 @@
 %left <Node_value> LP RP LB RB DOT
 %token <Node_value> SEMI COMMA
 %token <Node_value> LC RC
+%token <Node_value> STRING
+%token <Node_value> FOR
 
 %type <Node_value> Program ExtDefList
 %type <Node_value> ExtDef ExtDecList Specifier StructSpecifier VarDec Specifier_FunDec_Recv
@@ -71,9 +76,11 @@ ExtDef: Specifier ExtDecList SEMI  {
     extDefVisit_SS($$);
     }
     | Specifier_FunDec_Recv CompSt {
-    $$=new Node("ExtDef",@$.first_line);
-    $$->push_back($1->nodes[0],$1->nodes[1],$2);
-    extDefVisit_SFC($$);
+
+        // printf("Extern def with function \n");
+        $$=new Node("ExtDef",@$.first_line);
+        $$->push_back($1->nodes[0],$1->nodes[1],$2);
+        extDefVisit_SFC($$);
     }
     | Specifier ExtDecList error  {ierror(IERROR_TYPE::SEMI);}
     | Specifier error {ierror(IERROR_TYPE::SEMI);}
@@ -87,13 +94,22 @@ ExtDecList: VarDec {$$=new Node("ExtDecList",@$.first_line);$$->push_back($1);}
     | VarDec COMMA ExtDecList {$$=new Node("ExtDecList",@$.first_line);$$->push_back($1,$2,$3);}
     | VarDec ExtDecList error {ierror(IERROR_TYPE::COMMA);}
     ;
-/* specifier */
-Specifier: TYPE {$$=new Node("Specifier",@$.first_line);$$->push_back($1);}
-    | StructSpecifier {$$=new Node("Specifier",@$.first_line);$$->push_back($1);}
+/* specifier: for function and struct */
+Specifier: TYPE {
+
+    $$=new Node("Specifier",@$.first_line);$$->push_back($1);
+    }
+    | StructSpecifier {
+        $$=new Node("Specifier",@$.first_line);$$->push_back($1);
+        }
     ;
 StructSpecifier: STRUCT ID LC DefList RC {
     $$=new Node("StructSpecifier",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
-    | STRUCT ID  {$$=new Node("StructSpecifier",@$.first_line); $$->push_back($1,$2);}
+    | STRUCT ID  {
+        
+        $$=new Node("StructSpecifier",@$.first_line); $$->push_back($1,$2);
+        
+        }
     | STRUCT ID LC DefList error { isError = 1;ierror(IERROR_TYPE::RC); }
     ;
 /* declarator */
@@ -102,10 +118,17 @@ VarDec: ID {$$=new Node("VarDec",@$.first_line);$$->push_back($1);}
     $$=new Node("VarDec",@$.first_line); $$->push_back($1,$2,$3,$4);}
     | VarDec LB INT error %prec LOWER_ERROR {ierror(IERROR_TYPE::RB);}
 FunDec: ID LP VarList RP {
-    $$=new Node("FunDec",@$.first_line); $$->push_back($1,$2,$3,$4);funDecVisit($$);}
-    | ID LP RP  {$$=new Node("FunDec",@$.first_line); $$->push_back($1,$2,$3);funDecVisit($$);}
+
+    $$=new Node("FunDec",@$.first_line); $$->push_back($1,$2,$3,$4);funDecVisit($$);
+            string idName = std::get<string>($1->value);
+            // printf("Func ID %s\n", idName.c_str() );
+    }
+    | ID LP RP  {
+        $$=new Node("FunDec",@$.first_line); $$->push_back($1,$2,$3);funDecVisit($$);
+        }
     | ID LP VarList error {ierror(IERROR_TYPE::RP);}
-    | ID LP error {ierror(IERROR_TYPE::RP);}
+    | ID LP error {ierror(IERROR_TYPE::RP);
+    }
     ;
 VarList: ParamDec COMMA VarList {$$=new Node("VarList",@$.first_line); $$->push_back($1,$2,$3);}
     | ParamDec VarList error {ierror(IERROR_TYPE::COMMA);}
@@ -113,9 +136,13 @@ VarList: ParamDec COMMA VarList {$$=new Node("VarList",@$.first_line); $$->push_
     ;
 ParamDec: Specifier VarDec {$$=new Node("ParamDec",@$.first_line); $$->push_back($1,$2);}
     ;
-/* statement */
+/* statement, planning to add scoping */
 CompSt: LC DefList StmtList RC {
-    $$=new Node("CompSt",@$.first_line); $$->push_back($1,$2,$3,$4);}
+
+        $$=new Node("CompSt",@$.first_line); 
+        $$->push_back($1,$2,$3,$4); 
+
+    }
 ;
 StmtList:  {$$=new Node("StmtList",@$.first_line,Node_TYPE::NOTHING);}
     |  Stmt StmtList {$$=new Node("StmtList",@$.first_line); $$->push_back($1,$2);}
@@ -129,21 +156,26 @@ Stmt: Exp SEMI {$$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5,$6,$7);}
     | WHILE LP Exp RP Stmt {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
+    | FOR LP Def Exp SEMI Exp RP Stmt {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    }
     | WHILE LP Exp error Stmt {ierror(IERROR_TYPE::RP); }
     | Exp error {ierror(IERROR_TYPE::SEMI);}
     | RETURN Exp error {ierror(IERROR_TYPE::SEMI);}
     | IF LP Exp error Stmt  {YYERROR;ierror(IERROR_TYPE::RP); }
     | IF error Exp RP Stmt {ierror(IERROR_TYPE::LP); }
     ;
-/* local definition */
+/* local definition, DefList is only a recursive structure that holds the def  */
 DefList: {$$=new Node("DefList",@$.first_line,Node_TYPE::NOTHING);}
     | Def DefList {$$=new Node("DefList",@$.first_line); $$->push_back($1,$2);}
     ;
 /*
-// Definition of
-basic  name;
+// Definition of basic name: int x,y,z;
 // */
 Def: Specifier DecList SEMI {
+
+    // printf("Definition of variable detected\n");
     $$=new Node("Def",@$.first_line);
     $$->push_back($1,$2,$3);
     defVisit($$);
@@ -221,8 +253,12 @@ Exp: Exp ASSIGN Exp {
     | MINUS Exp %prec LOWER_MINUS {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;checkAlrthOperatorType($2);}
     | NOT Exp {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;}
     | ID LP Args RP {
+
+      // If expression is an ID + parantheses, this is a function invoke
       checkInvokeExist($1,@1.first_line);
       checkFunctionParams($1,$3,@3.first_line);
+
+      //append node that resembles the return type of that function   
       $$=new Node("Exp",@$.first_line);
       $$->push_back($1,$2,$3,$4);
       getReturnTypeOfFunction($$,$1);
@@ -251,9 +287,10 @@ Exp: Exp ASSIGN Exp {
         searchAndPutTypeOfDot($$,$1,$3);
     }
     | ID {
-    $$=new Node("Exp",@$.first_line);$$->push_back($1);
-    checkIdExists($1,@1.first_line);
-    idToExp($$,$1);
+
+        $$=new Node("Exp",@$.first_line);$$->push_back($1);
+        checkIdExists($1,@1.first_line);
+        idToExp($$,$1);
     }
     | BOOLEAN {
         $$=new Node("Exp",@$.first_line);$$->push_back($1);
@@ -273,6 +310,7 @@ Exp: Exp ASSIGN Exp {
     | Exp ILLEGAL_TOKEN Exp {}
     | ILLEGAL_TOKEN {}
     ;
+
 %%
 void yyerror(const char *s){
     isError=1;

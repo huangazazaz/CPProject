@@ -1,0 +1,32 @@
+struct Point {
+    int x;
+    int y;
+    float z;
+};
+
+int sumIntegers(int count) {
+    int sum = 0;
+    
+    // Using a for loop to sum integers from 1 to count
+    for (int i = 1; i <= count; i+=1) {
+        sum += i; // Add each value of i to the sum
+    }
+    
+    return sum;
+}
+
+int returnInteger(int count) {
+    return count;
+}
+
+int main() {
+    // struct Point p1;
+    // p1.x = 0;
+    // p1.y = 0;
+    // p1.z = 0.0;
+
+    int a = 10;
+    int result = sumIntegers(returnInteger(a));
+
+    return 0;
+}
