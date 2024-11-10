@@ -60,7 +60,7 @@ Program: ExtDefList {
     $$= new Node("Program",@$.first_line);
     $$->push_back($1);
     root_node=$$;
-    // root_node->print(0);
+    root_node->print(0);
 };
 ExtDefList:{$$=new Node("ExtDefList",@$.first_line,Node_TYPE::NOTHING);}
     | ExtDef ExtDefList {$$=new Node("ExtDefList",@$.first_line); $$->push_back($1,$2);}
@@ -158,7 +158,7 @@ Stmt: Exp SEMI {$$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
     | FOR LP Def Exp SEMI Exp RP Stmt {
         $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
     }
     | WHILE LP Exp error Stmt {ierror(IERROR_TYPE::RP); }
     | Exp error {ierror(IERROR_TYPE::SEMI);}
