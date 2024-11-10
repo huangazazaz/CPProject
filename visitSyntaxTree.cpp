@@ -1012,58 +1012,53 @@ void getAlrthOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
 
 void checkTypeMatchType(Type *leftType, Type *rightType, int lineNum, const std::function<void(int)> &func)
 {
-    if (leftType == nullptr || rightType == nullptr)
-    {
-        func(lineNum);
-    }
-    else if (leftType == rightType)
-    {
+    if (leftType == nullptr || rightType == nullptr || leftType == rightType)
         return;
-    }
-    else if (leftType->category != rightType->category)
+}
+else if (leftType->category != rightType->category)
+{
+    func(lineNum);
+}
+else if (leftType->category == CATEGORY::STRUCTURE &&
+         symbolTable[leftType->name]->name != symbolTable[rightType->name]->name)
+{
+    func(lineNum);
+}
+else if (leftType->category == CATEGORY::ARRAY)
+{
+    vector<int> demensionLeftArray, demensionRightArray;
+    Type *insideLeftType, *insideRightType;
+    std::tie(demensionLeftArray, insideLeftType) = getArrayDemensionAndType(leftType);
+    std::tie(demensionRightArray, insideRightType) = getArrayDemensionAndType(rightType);
+    if (demensionLeftArray.size() != demensionRightArray.size() ||
+        std::equal(demensionLeftArray.cbegin(), demensionLeftArray.cend(), demensionRightArray.cbegin()))
     {
         func(lineNum);
     }
-    else if (leftType->category == CATEGORY::STRUCTURE &&
-             symbolTable[leftType->name]->name != symbolTable[rightType->name]->name)
+    else if (insideLeftType == nullptr || insideRightType == nullptr)
     {
         func(lineNum);
     }
-    else if (leftType->category == CATEGORY::ARRAY)
-    {
-        vector<int> demensionLeftArray, demensionRightArray;
-        Type *insideLeftType, *insideRightType;
-        std::tie(demensionLeftArray, insideLeftType) = getArrayDemensionAndType(leftType);
-        std::tie(demensionRightArray, insideRightType) = getArrayDemensionAndType(rightType);
-        if (demensionLeftArray.size() != demensionRightArray.size() ||
-            std::equal(demensionLeftArray.cbegin(), demensionLeftArray.cend(), demensionRightArray.cbegin()))
-        {
-            func(lineNum);
-        }
-        else if (insideLeftType == nullptr || insideRightType == nullptr)
-        {
-            func(lineNum);
-        }
-        else if (insideRightType->category != insideLeftType->category)
-        {
-            func(lineNum);
-        }
-        else if (insideRightType->category == CATEGORY::PRIMITIVE && insideLeftType != insideRightType)
-        {
-            func(lineNum);
-        }
-        else if (insideRightType->category == CATEGORY::STRUCTURE)
-        {
-            if (insideLeftType->name != insideRightType->name)
-            {
-                func(lineNum);
-            }
-        }
-    }
-    else
+    else if (insideRightType->category != insideLeftType->category)
     {
         func(lineNum);
     }
+    else if (insideRightType->category == CATEGORY::PRIMITIVE && insideLeftType != insideRightType)
+    {
+        func(lineNum);
+    }
+    else if (insideRightType->category == CATEGORY::STRUCTURE)
+    {
+        if (insideLeftType->name != insideRightType->name)
+        {
+            func(lineNum);
+        }
+    }
+}
+else
+{
+    func(lineNum);
+}
 }
 
 void checkTypeMatch(Node *left, Node *right, int lineNum)

@@ -5,14 +5,7 @@ struct Apple
 };
 int test_2_r07()
 { 
-  struct Apple aa;
- int a = 2.5;
- float v = aa.weight;
- int b = aa.round;
- float s = 2;
- b = aa.round;
- b = aa.round;
- int t = 3.4;
- t = 3.4;
+
+ f = 4;
  return 0;
 }

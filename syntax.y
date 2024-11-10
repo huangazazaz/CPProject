@@ -60,7 +60,7 @@ Program: ExtDefList {
     $$= new Node("Program",@$.first_line);
     $$->push_back($1);
     root_node=$$;
-    root_node->print(0);
+    // root_node->print(0);
 };
 ExtDefList:{$$=new Node("ExtDefList",@$.first_line,Node_TYPE::NOTHING);}
     | ExtDef ExtDefList {$$=new Node("ExtDefList",@$.first_line); $$->push_back($1,$2);}
