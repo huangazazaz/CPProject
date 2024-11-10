@@ -1,8 +1,18 @@
-
+struct Apple
+{
+ int weight;
+ float round;
+};
 int test_2_r07()
 { 
-    for(int i = 1; i < 3; i = 2){
-        int a = 4;
-        float v = 3.4;
-    }
+  struct Apple aa;
+ int a = 2.5;
+ float v = aa.weight;
+ int b = aa.round;
+ float s = 2;
+ b = aa.round;
+ b = aa.round;
+ int t = 3.4;
+ t = 3.4;
+ return 0;
 }

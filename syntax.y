@@ -52,7 +52,7 @@
 
 %type <Node_value> Program ExtDefList
 %type <Node_value> ExtDef ExtDecList Specifier StructSpecifier VarDec Specifier_FunDec_Recv
-%type <Node_value> FunDec VarList ParamDec CompSt StmtList Stmt DefList
+%type <Node_value> FunDec VarList ParamDec CompSt CompList StmtList Stmt DefList
 %type <Node_value> Def DecList Dec Args Exp
 %%
 /* high-level definition */
@@ -137,13 +137,16 @@ VarList: ParamDec COMMA VarList {$$=new Node("VarList",@$.first_line); $$->push_
 ParamDec: Specifier VarDec {$$=new Node("ParamDec",@$.first_line); $$->push_back($1,$2);}
     ;
 /* statement, planning to add scoping */
-CompSt: LC DefList StmtList RC {
-
+CompSt: LC CompList RC {
         $$=new Node("CompSt",@$.first_line); 
-        $$->push_back($1,$2,$3,$4); 
-
+        $$->push_back($1,$2,$3); 
     }
 ;
+
+CompList: {$$=new Node("CompList",@$.first_line,Node_TYPE::NOTHING);}
+    | Def CompList {$$=new Node("CompList",@$.first_line); $$->push_back($1,$2);}
+    | Stmt CompList {$$=new Node("CompList",@$.first_line); $$->push_back($1,$2);}
+
 StmtList:  {$$=new Node("StmtList",@$.first_line,Node_TYPE::NOTHING);}
     |  Stmt StmtList {$$=new Node("StmtList",@$.first_line); $$->push_back($1,$2);}
     ;
@@ -181,12 +184,12 @@ Def: Specifier DecList SEMI {
     defVisit($$);
     }
     | Specifier DecList error {ierror(IERROR_TYPE::SEMI);}
-    | error DecList SEMI {
-    ierror(IERROR_TYPE::SPEC);
-    printf("error\n");
-    $$->print();
-    $2->print();
-    }
+    // | %prec LOWER_ERROR DecList SEMI {
+    // ierror(IERROR_TYPE::SPEC);
+    // printf("error\n");
+    // $$->print();
+    // $2->print();
+    // }
     ;
 DecList: Dec {$$=new Node("DecList",@$.first_line);$$->push_back($1);}
     | Dec COMMA DecList {$$=new Node("DecList",@$.first_line); $$->push_back($1,$2,$3);}
