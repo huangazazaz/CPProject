@@ -163,6 +163,9 @@ Stmt: Exp SEMI {$$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
     }
+    | FOR LP Def Exp SEMI Exp error Stmt {ierror(IERROR_TYPE::RP); }
+    | FOR error Def Exp SEMI Exp RP Stmt {ierror(IERROR_TYPE::LP); }
+    | WHILE error Exp RP Stmt {ierror(IERROR_TYPE::LP); }
     | WHILE LP Exp error Stmt {ierror(IERROR_TYPE::RP); }
     | Exp error {ierror(IERROR_TYPE::SEMI);}
     | RETURN Exp error {ierror(IERROR_TYPE::SEMI);}
@@ -290,7 +293,6 @@ Exp: Exp ASSIGN Exp {
         searchAndPutTypeOfDot($$,$1,$3);
     }
     | ID {
-
         $$=new Node("Exp",@$.first_line);$$->push_back($1);
         checkIdExists($1,@1.first_line);
         idToExp($$,$1);
