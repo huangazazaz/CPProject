@@ -321,8 +321,8 @@ void extDefVisit_SES_PureType(Node *node)
 void extDefVisit_SES_StructType(Node *node)
 {
     string structName = std::get<string>(node->get_nodes(0, 0, 1)->value);
-    Node *extDefList = node->get_nodes(1);
-    string variableName = getStrValueFromExtDecList(extDefList);
+    Node *extDecList = node->get_nodes(1);
+    string variableName = getStrValueFromExtDecList(extDecList);
     extDefVisit_SS(node);
     if (symbolTable.count(structName) == 0)
     {
@@ -339,7 +339,7 @@ void extDefVisit_SES_StructType(Node *node)
             {
                 variableRedefined(std::get<int>(node->value), variableName);
             }
-            if (extDefList->get_nodes(0)->nodes.size() == 1)
+            if (extDecList->get_nodes(0)->nodes.size() == 1)
             {
                 // Struct with variable definition
                 symbolTable[variableName] = symbolTable[structName];
@@ -348,15 +348,15 @@ void extDefVisit_SES_StructType(Node *node)
             {
                 // Struct with variable definition - with Array
                 symbolTable[variableName] = new Type(variableName, CATEGORY::ARRAY,
-                                                     getArrayFromVarDec(extDefList->get_nodes(0),
+                                                     getArrayFromVarDec(extDecList->get_nodes(0),
                                                                         symbolTable[structName]));
             }
-            if (extDefList->nodes.size() == 1)
+            if (extDecList->nodes.size() == 1)
             {
                 return;
             }
-            extDefList = extDefList->get_nodes(2);
-            variableName = getStrValueFromExtDecList(extDefList);
+            extDecList = extDecList->get_nodes(2);
+            variableName = getStrValueFromExtDecList(extDecList);
         } while (true);
     }
 }
