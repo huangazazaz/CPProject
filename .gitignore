@@ -1,0 +1,10 @@
+# Ignore generated files from the Makefile
+$(MAKE_PATH)/
+lex.yy.c
+syntax.tab.*
+*.out
+*.o
+*.a
+*.so
+syntax.output
+splc
