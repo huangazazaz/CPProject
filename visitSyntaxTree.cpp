@@ -1014,51 +1014,51 @@ void checkTypeMatchType(Type *leftType, Type *rightType, int lineNum, const std:
 {
     if (leftType == nullptr || rightType == nullptr || leftType == rightType)
         return;
-}
-else if (leftType->category != rightType->category)
-{
-    func(lineNum);
-}
-else if (leftType->category == CATEGORY::STRUCTURE &&
-         symbolTable[leftType->name]->name != symbolTable[rightType->name]->name)
-{
-    func(lineNum);
-}
-else if (leftType->category == CATEGORY::ARRAY)
-{
-    vector<int> demensionLeftArray, demensionRightArray;
-    Type *insideLeftType, *insideRightType;
-    std::tie(demensionLeftArray, insideLeftType) = getArrayDemensionAndType(leftType);
-    std::tie(demensionRightArray, insideRightType) = getArrayDemensionAndType(rightType);
-    if (demensionLeftArray.size() != demensionRightArray.size() ||
-        std::equal(demensionLeftArray.cbegin(), demensionLeftArray.cend(), demensionRightArray.cbegin()))
+
+    else if (leftType->category != rightType->category)
     {
         func(lineNum);
     }
-    else if (insideLeftType == nullptr || insideRightType == nullptr)
+    else if (leftType->category == CATEGORY::STRUCTURE &&
+             symbolTable[leftType->name]->name != symbolTable[rightType->name]->name)
     {
         func(lineNum);
     }
-    else if (insideRightType->category != insideLeftType->category)
+    else if (leftType->category == CATEGORY::ARRAY)
     {
-        func(lineNum);
-    }
-    else if (insideRightType->category == CATEGORY::PRIMITIVE && insideLeftType != insideRightType)
-    {
-        func(lineNum);
-    }
-    else if (insideRightType->category == CATEGORY::STRUCTURE)
-    {
-        if (insideLeftType->name != insideRightType->name)
+        vector<int> demensionLeftArray, demensionRightArray;
+        Type *insideLeftType, *insideRightType;
+        std::tie(demensionLeftArray, insideLeftType) = getArrayDemensionAndType(leftType);
+        std::tie(demensionRightArray, insideRightType) = getArrayDemensionAndType(rightType);
+        if (demensionLeftArray.size() != demensionRightArray.size() ||
+            std::equal(demensionLeftArray.cbegin(), demensionLeftArray.cend(), demensionRightArray.cbegin()))
         {
             func(lineNum);
         }
+        else if (insideLeftType == nullptr || insideRightType == nullptr)
+        {
+            func(lineNum);
+        }
+        else if (insideRightType->category != insideLeftType->category)
+        {
+            func(lineNum);
+        }
+        else if (insideRightType->category == CATEGORY::PRIMITIVE && insideLeftType != insideRightType)
+        {
+            func(lineNum);
+        }
+        else if (insideRightType->category == CATEGORY::STRUCTURE)
+        {
+            if (insideLeftType->name != insideRightType->name)
+            {
+                func(lineNum);
+            }
+        }
     }
-}
-else
-{
-    func(lineNum);
-}
+    else
+    {
+        func(lineNum);
+    }
 }
 
 void checkTypeMatch(Node *left, Node *right, int lineNum)

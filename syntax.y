@@ -82,8 +82,8 @@ ExtDef: Specifier ExtDecList SEMI  {
         $$->push_back($1->nodes[0],$1->nodes[1],$2);
         extDefVisit_SFC($$);
     }
-    | Specifier ExtDecList error  {ierror(IERROR_TYPE::SEMI);}
-    | Specifier error {ierror(IERROR_TYPE::SEMI);}
+    | Specifier ExtDecList error  {ierror(@$.first_line, IERROR_TYPE::SEMI);}
+    | Specifier error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
     ;
 Specifier_FunDec_Recv:Specifier FunDec{
     $$=new Node("Specifier_FunDec_Recv",@$.first_line);
@@ -92,7 +92,7 @@ Specifier_FunDec_Recv:Specifier FunDec{
 };
 ExtDecList: VarDec {$$=new Node("ExtDecList",@$.first_line);$$->push_back($1);}
     | VarDec COMMA ExtDecList {$$=new Node("ExtDecList",@$.first_line);$$->push_back($1,$2,$3);}
-    | VarDec ExtDecList error {ierror(IERROR_TYPE::COMMA);}
+    | VarDec ExtDecList error {ierror(@$.first_line, IERROR_TYPE::COMMA);}
     ;
 /* specifier: for function and struct */
 Specifier: TYPE {
@@ -110,13 +110,13 @@ StructSpecifier: STRUCT ID LC DefList RC {
         $$=new Node("StructSpecifier",@$.first_line); $$->push_back($1,$2);
         
         }
-    | STRUCT ID LC DefList error { isError = 1;ierror(IERROR_TYPE::RC); }
+    | STRUCT ID LC DefList error { ierror(@$.first_line, IERROR_TYPE::RC); }
     ;
 /* declarator */
 VarDec: ID {$$=new Node("VarDec",@$.first_line);$$->push_back($1);}
     | VarDec LB INT RB {
     $$=new Node("VarDec",@$.first_line); $$->push_back($1,$2,$3,$4);}
-    | VarDec LB INT error %prec LOWER_ERROR {ierror(IERROR_TYPE::RB);}
+    | VarDec LB INT error %prec LOWER_ERROR {ierror(@$.first_line, IERROR_TYPE::RB);}
 FunDec: ID LP VarList RP {
 
     $$=new Node("FunDec",@$.first_line); $$->push_back($1,$2,$3,$4);funDecVisit($$);
@@ -126,12 +126,12 @@ FunDec: ID LP VarList RP {
     | ID LP RP  {
         $$=new Node("FunDec",@$.first_line); $$->push_back($1,$2,$3);funDecVisit($$);
         }
-    | ID LP VarList error {ierror(IERROR_TYPE::RP);}
-    | ID LP error {ierror(IERROR_TYPE::RP);
+    | ID LP VarList error {ierror(@$.first_line, IERROR_TYPE::RP);}
+    | ID LP error {ierror(@$.first_line, IERROR_TYPE::RP);
     }
     ;
 VarList: ParamDec COMMA VarList {$$=new Node("VarList",@$.first_line); $$->push_back($1,$2,$3);}
-    | ParamDec VarList error {ierror(IERROR_TYPE::COMMA);}
+    | ParamDec VarList error {ierror(@$.first_line, IERROR_TYPE::COMMA);}
     | ParamDec {$$=new Node("VarList",@$.first_line); $$->push_back($1);}
     ;
 ParamDec: Specifier VarDec {$$=new Node("ParamDec",@$.first_line); $$->push_back($1,$2);}
@@ -163,14 +163,14 @@ Stmt: Exp SEMI {$$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
     }
-    | FOR LP Def Exp SEMI Exp error Stmt {ierror(IERROR_TYPE::RP); }
-    | FOR error Def Exp SEMI Exp RP Stmt {ierror(IERROR_TYPE::LP); }
-    | WHILE error Exp RP Stmt {ierror(IERROR_TYPE::LP); }
-    | WHILE LP Exp error Stmt {ierror(IERROR_TYPE::RP); }
-    | Exp error {ierror(IERROR_TYPE::SEMI);}
-    | RETURN Exp error {ierror(IERROR_TYPE::SEMI);}
-    | IF LP Exp error Stmt  {YYERROR;ierror(IERROR_TYPE::RP); }
-    | IF error Exp RP Stmt {ierror(IERROR_TYPE::LP); }
+    | FOR LP Def Exp SEMI Exp error Stmt {ierror(@$.first_line, IERROR_TYPE::RP); }
+    | FOR error Def Exp SEMI Exp RP Stmt {ierror(@$.first_line, IERROR_TYPE::LP); }
+    | WHILE error Exp RP Stmt {ierror(@$.first_line, IERROR_TYPE::LP); }
+    | WHILE LP Exp error Stmt {ierror(@$.first_line, IERROR_TYPE::RP); }
+    | Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
+    | RETURN Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
+    | IF LP Exp error Stmt  {YYERROR;ierror(@$.first_line, IERROR_TYPE::RP); }
+    | IF error Exp RP Stmt {ierror(@$.first_line, IERROR_TYPE::LP); }
     ;
 /* local definition, DefList is only a recursive structure that holds the def  */
 DefList: {$$=new Node("DefList",@$.first_line,Node_TYPE::NOTHING);}
@@ -186,9 +186,9 @@ Def: Specifier DecList SEMI {
     $$->push_back($1,$2,$3);
     defVisit($$);
     }
-    | Specifier DecList error {ierror(IERROR_TYPE::SEMI);}
+    | Specifier DecList error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
     // | %prec LOWER_ERROR DecList SEMI {
-    // ierror(IERROR_TYPE::SPEC);
+    // ierror(@$.first_line, IERROR_TYPE::SPEC);
     // printf("error\n");
     // $$->print();
     // $2->print();
@@ -196,7 +196,7 @@ Def: Specifier DecList SEMI {
     ;
 DecList: Dec {$$=new Node("DecList",@$.first_line);$$->push_back($1);}
     | Dec COMMA DecList {$$=new Node("DecList",@$.first_line); $$->push_back($1,$2,$3);}
-    | Dec  DecList error {ierror(IERROR_TYPE::COMMA);}
+    | Dec  DecList error {ierror(@$.first_line, IERROR_TYPE::COMMA);}
 ;
 Dec: VarDec {$$=new Node("Dec",@$.first_line); $$->push_back($1);}
     | VarDec ASSIGN Exp {
@@ -255,7 +255,7 @@ Exp: Exp ASSIGN Exp {
     | Exp BAND Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
     | Exp XOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
     | LP Exp RP {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);$$->type=$2->type;} // lp is (
-    | LP Exp error {ierror(IERROR_TYPE::RP);} // TODO 参数判断有问题， 比如 func(p1, );
+    | LP Exp error {ierror(@$.first_line, IERROR_TYPE::RP);} // TODO 参数判断有问题， 比如 func(p1, );
     | MINUS Exp %prec LOWER_MINUS {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;checkAlrthOperatorType($2);}
     | NOT Exp {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;}
     | ID LP Args RP {
@@ -269,7 +269,7 @@ Exp: Exp ASSIGN Exp {
       $$->push_back($1,$2,$3,$4);
       getReturnTypeOfFunction($$,$1);
       }
-    | ID LP Args error {ierror(IERROR_TYPE::RP);}
+    | ID LP Args error {ierror(@$.first_line, IERROR_TYPE::RP);}
     | ID LP RP {
       checkInvokeExist($1,@1.first_line);
       checkFunctionParams($1,nullptr,@3.first_line);
@@ -277,7 +277,7 @@ Exp: Exp ASSIGN Exp {
       $$->push_back($1,$2,$3);
       getReturnTypeOfFunction($$,$1);
     }
-    | ID LP error {ierror(IERROR_TYPE::RP);}
+    | ID LP error {ierror(@$.first_line, IERROR_TYPE::RP);}
     | Exp LB Exp RB{
         $$=new Node("Exp",@$.first_line);
         $$->push_back($1,$2,$3,$4);
@@ -285,7 +285,7 @@ Exp: Exp ASSIGN Exp {
         checkArrayExists($1);
         getArrayType($$,$1,$3);
     }
-    | Exp LB Exp error {ierror(IERROR_TYPE::RB);}
+    | Exp LB Exp error {ierror(@$.first_line, IERROR_TYPE::RB);}
     | Exp DOT ID {
         $$=new Node("Exp",@$.first_line);
         $$->push_back($1,$2,$3);

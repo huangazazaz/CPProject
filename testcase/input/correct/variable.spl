@@ -1,0 +1,21 @@
+int main(){
+  int a;
+  int b = 2;
+  int i = b;
+  a = i;
+  a = 0xAb;
+  a = 2;
+  b += a;
+  b -= a;
+  b *= a;
+  b /= a;
+
+  float f = 3.5;
+  f -= 3.1;
+
+  char c = '$';
+  c = '4';
+
+  bool bo = a == b;
+  bo = false;
+}
