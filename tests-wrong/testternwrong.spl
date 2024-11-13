@@ -1,0 +1,25 @@
+struct Point {
+    int x;
+    int y;
+    float z;
+};
+
+int wrong_test() {
+    int a = 10;
+    int b = 5;
+    
+    // Missing the condition and one of the branches
+    int result = (a > b) ? : b;  // Error: Missing expression after "?"
+    
+    return 0;
+}
+
+int main() {
+     int a = 10;
+    float b = 5.5;
+    
+    // This is incorrect because the ternary operator expects both sides of the "?" to have the same type
+    int result = (a > b) ? a : b;  // Error: Type mismatch, a is int and b is float
+    
+    return 0;
+}

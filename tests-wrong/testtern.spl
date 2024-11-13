@@ -1,0 +1,21 @@
+struct Point {
+    int x;
+    int y;
+    float z;
+};
+
+int absoluteValue(int num) {
+    return (num < 0) ? -num : num; // If num is negative, return -num; otherwise, return num
+}
+
+int main() {
+    int a = -10;
+    int b = 5;
+    int absA = absoluteValue(a); // absA should be 10
+    int absB = absoluteValue(b); // absB should be 5
+
+    // Using the ternary operator directly in an expression
+    int maxVal = (a > b) ? a : b; // maxVal will be 5, since b is greater than a
+
+    return 0;
+}

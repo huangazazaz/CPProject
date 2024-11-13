@@ -101,6 +101,8 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 "]" {yylval.Node_value = new  Node("RB");return RB;}
 "{" {yylval.Node_value = new  Node("LC");return LC;}
 "}" {yylval.Node_value = new  Node("RC");return RC;}
+"?" {yylval.Node_value = new  Node("RC");return TERN;}
+":" {yylval.Node_value = new  Node("RC");return COLON;}
 "true" {
     yylval.Node_value = new  Node(true);
     return BOOLEAN;

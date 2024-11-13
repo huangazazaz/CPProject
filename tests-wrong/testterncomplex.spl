@@ -1,0 +1,11 @@
+int main() {
+    int a = 10;
+    int b = 5;
+    int c = 8;
+    
+    // Nested ternary operator to find the greatest of three numbers
+    int maxVal = (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
+    // maxVal will be 10, as a is greater than both b and c
+    
+    return 0;
+}

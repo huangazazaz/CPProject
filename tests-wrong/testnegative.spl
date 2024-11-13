@@ -1,0 +1,31 @@
+struct Point {
+    int x;
+    int y;
+    float z;
+};
+
+int negateNumber(int num) {
+    return -num; // Negates the input number
+}
+
+int main() {
+    int positiveNum = 10;
+    int negativeNum = -5; // Directly initialize with a negative number
+    x.y =1;
+    x.y
+
+    //
+    Point x = { x: 3, y:4,z:8 }
+
+    //
+    char[] = {a,b,c,d};
+    int negativeNumWithParam = (-5); // Directly initialize with a negative number
+    int negativeNumWithExpression =(-5 + 8 / 4);
+
+    int negatedResult = negateNumber(positiveNum); // Expecting -10
+
+    int sum = positiveNum + negativeNum; // Adding a positive and a negative number
+    int diff = positiveNum - negativeNum; // Subtracting a negative from a positive
+
+    return 0;
+}
