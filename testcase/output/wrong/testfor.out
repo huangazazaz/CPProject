@@ -1,0 +1,189 @@
+Error at Line 18: redefine variable: count
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        StructSpecifier (1)
+          STRUCT
+          ID: Point
+          LC
+          DefList (2)
+            Def (2)
+              Specifier (2)
+                TYPE: int
+              DecList (2)
+                Dec (2)
+                  VarDec (2)
+                    ID: x
+              SEMI
+            DefList (3)
+              Def (3)
+                Specifier (3)
+                  TYPE: int
+                DecList (3)
+                  Dec (3)
+                    VarDec (3)
+                      ID: y
+                SEMI
+              DefList (4)
+                Def (4)
+                  Specifier (4)
+                    TYPE: float
+                  DecList (4)
+                    Dec (4)
+                      VarDec (4)
+                        ID: z
+                  SEMI
+          RC
+      SEMI
+    ExtDefList (7)
+      ExtDef (7)
+        Specifier (7)
+          TYPE: int
+        FunDec (7)
+          ID: sumIntegers
+          LP
+          VarList (7)
+            ParamDec (7)
+              Specifier (7)
+                TYPE: int
+              VarDec (7)
+                ID: count
+          RP
+        CompSt (7)
+          LC
+          CompList (8)
+            Def (8)
+              Specifier (8)
+                TYPE: int
+              DecList (8)
+                Dec (8)
+                  VarDec (8)
+                    ID: sum
+                  ASSIGN
+                  Exp (8)
+                    INT: 0
+              SEMI
+            CompList (11)
+              Stmt (11)
+                FOR
+                LP
+                Def (11)
+                  Specifier (11)
+                    TYPE: int
+                  DecList (11)
+                    Dec (11)
+                      VarDec (11)
+                        ID: i
+                      ASSIGN
+                      Exp (11)
+                        INT: 1
+                  SEMI
+                Exp (11)
+                  Exp (11)
+                    ID: i
+                  LE
+                  Exp (11)
+                    ID: count
+                SEMI
+                Exp (11)
+                  Exp (11)
+                    ID: i
+                  PLUS_ASSIGN
+                  Exp (11)
+                    INT: 1
+                RP
+                Stmt (11)
+                  CompSt (11)
+                    LC
+                    CompList (12)
+                      Stmt (12)
+                        Exp (12)
+                          Exp (12)
+                            ID: sum
+                          PLUS_ASSIGN
+                          Exp (12)
+                            ID: i
+                        SEMI
+                    RC
+              CompList (15)
+                Stmt (15)
+                  RETURN
+                  Exp (15)
+                    ID: sum
+                  SEMI
+          RC
+      ExtDefList (18)
+        ExtDef (18)
+          Specifier (18)
+            TYPE: int
+          FunDec (18)
+            ID: returnInteger
+            LP
+            VarList (18)
+              ParamDec (18)
+                Specifier (18)
+                  TYPE: int
+                VarDec (18)
+                  ID: count
+            RP
+          CompSt (18)
+            LC
+            CompList (19)
+              Stmt (19)
+                RETURN
+                Exp (19)
+                  ID: count
+                SEMI
+            RC
+        ExtDefList (22)
+          ExtDef (22)
+            Specifier (22)
+              TYPE: int
+            FunDec (22)
+              ID: main
+              LP
+              RP
+            CompSt (22)
+              LC
+              CompList (28)
+                Def (28)
+                  Specifier (28)
+                    TYPE: int
+                  DecList (28)
+                    Dec (28)
+                      VarDec (28)
+                        ID: a
+                      ASSIGN
+                      Exp (28)
+                        INT: 10
+                  SEMI
+                CompList (29)
+                  Def (29)
+                    Specifier (29)
+                      TYPE: int
+                    DecList (29)
+                      Dec (29)
+                        VarDec (29)
+                          ID: result
+                        ASSIGN
+                        Exp (29)
+                          ID: sumIntegers
+                          LP
+                          Args (29)
+                            Exp (29)
+                              ID: returnInteger
+                              LP
+                              Args (29)
+                                Exp (29)
+                                  ID: a
+                              RP
+                          RP
+                    SEMI
+                  CompList (31)
+                    Stmt (31)
+                      RETURN
+                      Exp (31)
+                        INT: 0
+                      SEMI
+              RC

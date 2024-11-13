@@ -29,6 +29,6 @@ const std::unordered_map<IERROR_TYPE, std::string> ierror_map = {
     {IERROR_TYPE::COMMA, R"(COMMA ,)"},
 };
 
-void ierror(IERROR_TYPE type);
+void ierror(int line, IERROR_TYPE type);
 
 #endif
