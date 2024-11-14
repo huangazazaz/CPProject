@@ -34,6 +34,7 @@ PLUS    -> +
 MINUS   -> -
 MUL     -> *
 DIV     -> /
+MOD     -> %
 BAND    -> &
 AND     -> &&
 BOR     -> |

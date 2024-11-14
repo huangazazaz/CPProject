@@ -1,0 +1,15 @@
+int main(){
+    while(true){
+        int a = 1;
+        a = 2;
+        for(int i = 0; i < 5; i += 1){
+            bool b = false;
+            while(b){
+               int s = 1;
+               for(int v = 2;b;b=false){
+                    b = true;
+               }
+            }
+        }
+    }
+}

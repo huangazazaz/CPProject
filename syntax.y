@@ -41,7 +41,7 @@
 %left <Node_value> BAND
 %left <Node_value> LT LE GT GE NE EQ
 %nonassoc LOWER_MINUS
-%left <Node_value> PLUS MINUS
+%left <Node_value> PLUS MINUS MOD
 %left <Node_value> MUL DIV
 %right <Node_value> NOT
 %left <Node_value> LP RP LB RB DOT
@@ -247,6 +247,7 @@ Exp: Exp ASSIGN Exp {
     | Exp GE Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp NE Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp EQ Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    | Exp MOD Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
     | Exp PLUS Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
     | Exp MINUS Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
     | Exp MUL Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}

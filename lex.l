@@ -89,6 +89,7 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 "*=" {yylval.Node_value = new  Node("MUL_ASSIGN");return MUL_ASSIGN;}
 "/" {yylval.Node_value = new  Node("DIV");return DIV;}
 "/=" {yylval.Node_value = new  Node("DIV_ASSIGN");return DIV_ASSIGN;}
+"%" {yylval.Node_value = new  Node("MOD");return MOD;}
 "&&" {yylval.Node_value = new  Node("AND");return AND;}
 "&" {yylval.Node_value = new  Node("BAND");return BAND;}
 "||" {yylval.Node_value = new  Node("OR");return OR;}

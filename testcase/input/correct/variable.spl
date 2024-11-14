@@ -9,6 +9,11 @@ int main(){
   b -= a;
   b *= a;
   b /= a;
+  a = a + b;
+  a = a - b;
+  a = a * b;
+  a = a / b;
+  a = a % b;
 
   float f = 3.5;
   f -= 3.1;
@@ -18,4 +23,5 @@ int main(){
 
   bool bo = a == b;
   bo = false;
+  bo = true;
 }
