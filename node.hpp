@@ -61,6 +61,7 @@ public:
 
     void print(int space = 0);
 
+    // push one child node
     void push_back(Node *subnode)
     {
         this->nodes_num++;
@@ -68,6 +69,8 @@ public:
     }
 
     template <typename T, typename... Args>
+
+    // pushes multiple child nodde
     void push_back(T subnode1, Args... rest)
     {
         this->push_back(subnode1);
@@ -80,6 +83,8 @@ public:
     }
 
     template <typename T = size_t, typename... Args>
+
+    // order could mean the depth of the current node
     Node *&get_nodes(size_t order, Args... rest)
     {
         return this->nodes[order]->get_nodes(rest...);

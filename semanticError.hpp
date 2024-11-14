@@ -39,4 +39,6 @@ void structRedefined(int lineNum, const std::string &name);
 
 void structNoDefinition(int lineNum, const std::string &name);
 
+void invalidTernaryOperator(int lineNum);
+
 #endif

@@ -3,6 +3,7 @@
     #include <unordered_map>
     #include "type.hpp"
     #include "visitSyntaxTree.hpp"
+    #include "semanticError.hpp"
     
     using std::string;
     using std::unordered_map;
@@ -47,8 +48,9 @@
 %left <Node_value> LP RP LB RB DOT
 %token <Node_value> SEMI COMMA
 %token <Node_value> LC RC
-%token <Node_value> STRING
 %token <Node_value> FOR
+%token <Node_value> TERN
+%token <Node_value> COLON
 
 %type <Node_value> Program ExtDefList
 %type <Node_value> ExtDef ExtDecList Specifier StructSpecifier VarDec Specifier_FunDec_Recv
@@ -140,7 +142,7 @@ ParamDec: Specifier VarDec {$$=new Node("ParamDec",@$.first_line); $$->push_back
 CompSt: LC CompList RC {
         $$=new Node("CompSt",@$.first_line); 
         $$->push_back($1,$2,$3); 
-    }
+    }   
 ;
 
 CompList: {$$=new Node("CompList",@$.first_line,Node_TYPE::NOTHING);}
@@ -254,11 +256,32 @@ Exp: Exp ASSIGN Exp {
     | Exp DIV Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
     | Exp BOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
     | Exp BAND Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp XOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp XOR Exp {
+        $$=new Node("Exp",@$.first_line); 
+        $$->push_back($1,$2,$3);
+        getAlrthOperatorType($$,$1,$3);}
     | LP Exp RP {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);$$->type=$2->type;} // lp is (
     | LP Exp error {ierror(@$.first_line, IERROR_TYPE::RP);} // TODO 参数判断有问题， 比如 func(p1, );
     | MINUS Exp %prec LOWER_MINUS {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;checkAlrthOperatorType($2);}
-    | NOT Exp {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;}
+    | NOT Exp {
+        $$=new Node("Exp",@$.first_line);
+        $$->push_back($1,$2);
+        $$->type=$2->type;}
+    | Exp TERN Exp COLON Exp {
+
+        $$=new Node("Exp",@$.first_line); 
+        $$->type=$3->type;
+        $$->push_back($1,$2,$3,$4,$5); 
+
+        if(!checkBoolOperatorType($1)){
+            invalidTernaryOperator(@1.first_line);
+        };
+        checkTypeMatch($3,$5,@3.first_line);
+        
+    }
+    | Exp TERN COLON Exp error{
+        printf("Wrong ternary declaration!!\n");
+    }
     | ID LP Args RP {
 
       // If expression is an ID + parantheses, this is a function invoke
@@ -288,11 +311,14 @@ Exp: Exp ASSIGN Exp {
     }
     | Exp LB Exp error {ierror(@$.first_line, IERROR_TYPE::RB);}
     | Exp DOT ID {
+
+        // For checking struct members
         $$=new Node("Exp",@$.first_line);
         $$->push_back($1,$2,$3);
         checkNoSuchMember($$);
         searchAndPutTypeOfDot($$,$1,$3);
     }
+    | Exp TERN Exp 
     | ID {
         $$=new Node("Exp",@$.first_line);$$->push_back($1);
         checkIdExists($1,@1.first_line);

@@ -87,3 +87,8 @@ void structNoDefinition(int lineNum, const std::string &name)
 {
     printf("Error at Line %d: struct %s haven't define\n", lineNum, name.c_str());
 }
+
+void invalidTernaryOperator(int lineNum)
+{
+    printf("Error at Line %d: Invalid ternary condition\n", lineNum);
+}

@@ -47,7 +47,7 @@ void checkArrayExists(Node *Exp);
 
 void getArrayType(Node *expOut, Node *expIn, Node *Integer);
 
-// bool checkBoolOperatorType(Node *exp);
+bool checkBoolOperatorType(Node *exp);
 //
 Node_TYPE checkAlrthOperatorType(Node *exp);
 
