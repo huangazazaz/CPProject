@@ -1030,8 +1030,7 @@ void checkTypeMatchType(Type *leftType, Type *rightType, int lineNum, const std:
         Type *insideLeftType, *insideRightType;
         std::tie(demensionLeftArray, insideLeftType) = getArrayDemensionAndType(leftType);
         std::tie(demensionRightArray, insideRightType) = getArrayDemensionAndType(rightType);
-        if (demensionLeftArray.size() != demensionRightArray.size() ||
-            std::equal(demensionLeftArray.cbegin(), demensionLeftArray.cend(), demensionRightArray.cbegin()))
+        if (demensionLeftArray.size() != demensionRightArray.size())
         {
             func(lineNum);
         }

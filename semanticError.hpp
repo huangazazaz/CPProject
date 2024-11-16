@@ -5,6 +5,8 @@
 #include <string>
 #include <unordered_map>
 
+extern int is_sem_error;
+
 void variableNoDefinition(int lineNum, const std::string &name);
 
 void functionNoDefinition(int lineNum, const std::string &name);

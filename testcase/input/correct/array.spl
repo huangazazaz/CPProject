@@ -1,0 +1,53 @@
+struct Student{
+    float score = 70.5;
+    int age;
+    bool gender = true;
+    char c;
+};
+
+int main(){
+
+    // 基本类型数组声明、定义与使用
+    int is[10];
+    is[0] = 10;
+    is[3] = 4;
+
+    int i = is[5];
+
+    float fs[4];
+    fs[2] = 2.5;
+    fs[0] = 4.5;
+
+    float f = fs[3];
+
+    bool bs[5];
+    bs[2] = true;
+    bs[1] = false;
+
+    bool b = bs[0];
+
+    char cs[5];
+    cs[2] = '$';
+    cs[1] = '%';
+
+    char c = cs[3];
+
+    // 结构体数组
+    struct Student students[10];
+    struct Student bob = students[4];
+    struct Student alice;
+
+    students[2] = alice;
+
+    // 多维数组 
+    int iss[5][10];
+
+    // 数组赋值，长度需要匹配
+    is = iss[3];
+
+    i = iss[7][1];
+
+    iss[3][2] = 5;
+
+    iss[is[2]][iss[2][1]] = is[1];
+}

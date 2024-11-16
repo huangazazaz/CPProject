@@ -1,0 +1,56 @@
+// 四种类型都可以作为函数返回值和参数传递
+int funcInt(int i1){
+    return i1 + 1;
+}
+
+int funcInt2(int i2, int i3){
+    return funcInt(i2 + i3);
+}
+
+float funcFloat(float f1){
+    return f1 - 2.34;
+}
+
+float funcFloat2(float f2, float f3){
+    return funcFloat(f2 - f3);
+}
+
+bool funcBool(bool b1){
+    return b1 && true;
+}
+
+char funcChar(char c1){
+    return '!';
+}
+
+struct People{
+    int age;
+};
+
+struct People funcStruct(struct People people1){
+    struct People people2;
+    people2.age = 2;
+    return people2;
+}
+
+int main(){
+    int i = 1;
+    float f = 3.4;
+    bool b = true;
+    char c = '$';
+
+// 返回值可以直接运算
+    i = funcInt(i) + funcInt2(i, i);
+    f = funcFloat(f) - funcFloat2(f, f);
+    b = funcBool(b) && funcBool(b);
+    c = funcChar(c);
+
+// 返回值可以作为参数传递
+    i = funcInt(funcInt(i));
+    f = funcFloat(funcFloat(f));
+    b = funcBool(funcBool(b));
+    c = funcChar(funcChar(c));
+
+    struct People p;
+    p = funcStruct(p);
+}

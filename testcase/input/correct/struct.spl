@@ -1,13 +1,18 @@
+// 可以定义四种类型数据
 struct Student{
     float score = 70.5;
     int age;
     bool gender = true;
+    char c;
 };
 
 int main(){
+    // 对struct进行实例化
     struct Student john;
-    john.score = 50.5;
+    // 可以对struct的属性进行赋值
+    john.score = 50.5 * john.score + john.score / 50.6 - john.score % 5.4;
     john.age = 20;
+    // 可以读取struct的属性
     bool g = john.gender;
     return 0;
 }

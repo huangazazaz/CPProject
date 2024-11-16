@@ -23,7 +23,7 @@ int main(int argc, char **argv)
         yyrestart(f);
         yyparse();
     }
-    if (isError == 0)
+    if (isError == 0 && is_sem_error == 0)
     {
         root_node->print(0);
         // std::cout << symbolTable.size() << std::endl;

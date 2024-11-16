@@ -1,0 +1,19 @@
+int main(){
+    bool a = true;
+    bool b = false;
+    // 条件运算作为条件
+    if(a || b) {
+        // 直接用bool变量作为条件
+        if(a) {
+            return 3;
+        } else if (b) {
+            return 2;
+        }
+        return 3;
+    } else if (a && b) {
+        return 2;
+    } else {
+        return 1;
+    }
+    return 0;
+}

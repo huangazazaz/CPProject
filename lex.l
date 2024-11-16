@@ -13,14 +13,7 @@
         yylloc.first_column = yycolumn; \
         yylloc.last_column = yycolumn + yyleng;\
         yycolumn += yyleng;
-    //INT32_10 [+-]?(0|([1-9]{digit}*))
-    /*
-    it seems that in bison and flex,
-    the YYLTYPE's definition is different
-    one is a struct and another look like the before one's pointer
-    */
-    //UFLOAT32 {digit}+(.{digit}+)?([Ee][+-]?{digit}+)?
-    //%option c++
+
 %}
 %option noyywrap
 %option yylineno
@@ -130,12 +123,12 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 }
 {UINT32_16_error_more_0} {
     isError=1;
-    fprintf(LEXER_ERROR_OUTPUT, "Error type A at Line %s: Illgeal UINT32 hex-Leading 0 \n", yytext);
+    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %s: Illgeal UINT32 hex-Leading 0 \n", yytext);
     return ILLEGAL_TOKEN;
 }
 {UINT32_16_error_illgeal_char} {
     isError=1;
-    fprintf(LEXER_ERROR_OUTPUT, "Error type A at Line %s: UINT32_16_error_illgeal_char \n", yytext);
+    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %s: UINT32_16_error_illgeal_char \n", yytext);
     return ILLEGAL_TOKEN;
 }
 {CHAR} {
@@ -151,30 +144,30 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 }
 {CHAR_16_more0} {
     isError=1;
-    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
     return ILLEGAL_TOKEN;
 }
 {CHAR_16_illgeal_char} {
     isError=1;
-    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
     return ILLEGAL_TOKEN;
 }
 {CHAR_16_toolong} {
     isError=1;
-    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
     return ILLEGAL_TOKEN;
 }
 [^0-9a-zA-Z_'\\\(\)\[\]\{\}\;\,\+\-\*\/] {
     isError=1;
     // illgeal characters
-    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
     //yymore();
     return ILLEGAL_TOKEN;
 }
 [0-9]*{ID} {
     isError=1;
     // Illgeal ID
-    fprintf(LEXER_ERROR_OUTPUT,"Error type A at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
     // TODO
     return ID;
 }

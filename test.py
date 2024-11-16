@@ -1,6 +1,5 @@
 import os
 import subprocess
-import sys
 
 correct_folder = "correct"
 wrong_folder = "wrong"

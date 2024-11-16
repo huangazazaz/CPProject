@@ -1,4 +1,4 @@
-Error type A at Line 4: unknown lexeme $
+Error at Line 4: unknown lexeme $
 Error at Line 4: redefine variable: i
 Missing semicolon ; at line 6
-Error type A at Line 8: unknown lexeme @
+Error at Line 8: unknown lexeme @
