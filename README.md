@@ -18,3 +18,7 @@ For syntax analysis, we used **Bison** to generate a parser for our language. Th
 The generated parser efficiently handles errors by providing meaningful error messages and recovery options.
 
 Our parser structure can be find in syntax.txt.
+
+Now we have completed most of the syntax and lexical analysis for the language and have also implemented parts of semantic analysis. This includes type checking to ensure operations are performed on compatible types, as well as validations for undefined or redeclared variables.
+
+Currently, we are working on extending the language with features such as the ternary conditional operator (a ? b : c) and range checks. 
