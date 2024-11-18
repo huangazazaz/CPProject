@@ -262,8 +262,6 @@ Dec: VarDec {$$=new Node("Dec",@$.first_line); $$->push_back($1);}
 Args: Exp COMMA Args  {$$=new Node("Args",@$.first_line); $$->push_back($1,$2,$3);}
     | Exp COMMA error  {ierror(@$.first_line, IERROR_TYPE::ARG);
         $$=new Node("Args",@$.first_line); $$->push_back($1);}
-    | Exp error Args  {ierror(@$.first_line, IERROR_TYPE::COMMA);
-        $$=new Node("Args",@$.first_line); $$->push_back($1,new Node("COMMA"), $3);}
     | Exp {$$=new Node("Args",@$.first_line);$$->push_back($1);}
     ;
 Exp: Exp ASSIGN Exp {
