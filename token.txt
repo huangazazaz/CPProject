@@ -41,6 +41,7 @@ BOR     -> |
 OR      -> ||
 XOR     -> ^
 NOT     -> !
+TERN    -> ?
 LP      -> ( /* left parenthesis brace*/
 RP      -> ) /* right parenthesis brace */
 LB      -> [ /* left brace */
