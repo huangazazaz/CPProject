@@ -32,7 +32,7 @@ ID {letters_}({letters_}|{digit}){0,31}
 CHAR '.'
 CHAR_16 '\\x(0|[1-9a-fA-F]{digit_16})'
 CHAR_16_more0 '\\x00{digit_16}*'
-CHAR_16_illgeal_char '\\x([1-9a-fA-F]){digit_16}*[g-z]{digit_16}*'
+CHAR_16_illgeal_char '\\x{digit_16}*([^0-9a-fA-F])+{digit_16}*'
 CHAR_16_toolong '\\x{digit_16}{3,}'
 %%
 "//" {
