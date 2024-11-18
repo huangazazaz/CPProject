@@ -1,4 +1,4 @@
 int test_1_r05()
 {
-  foo1(1 2);
+  int a = 0x;
 }

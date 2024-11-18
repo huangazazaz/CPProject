@@ -25,7 +25,7 @@ UINT32_10 (0|([1-9]{digit}*))
 UINT32_16 0[xX](0|[1-9a-fA-F]{digit_16}*)
 UINT32_16_error_leading_0 0(0|[1-9a-fA-F]{digit_16}*)
 UINT32_16_error_more_0 0[xX](0{2,}{digit_16}*)
-UINT32_16_error_illgeal_char 0[xX]([1-9a-fA-F]{digit_16}*[g-z]{digit_16}*)
+UINT32_16_error_illgeal_char 0[xX]([1-9a-fA-F]*)
 UINT32 {UINT32_10}|{UINT32_16}
 UFLOAT32 {digit}+\.{digit}+
 ID {letters_}({letters_}|{digit}){0,31}
@@ -123,56 +123,57 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 }
 {UINT32_16_error_more_0} {
     isError=1;
-    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %d: Illgeal UINT32 hex-Leading 0 \n", yylineno);
+    yylval.Node_value = new Node(0);
+    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %d: '%s' - Illgeal UINT32 hex-Leading 0 \n", yylineno, yytext);
     return INT;
 }
 {UINT32_16_error_leading_0} {
     isError=1;
-    yylval.Node_value = new Node(atoi(yytext));
-    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %d: Illgeal UINT32 Leading 0 \n", yylineno);
+    yylval.Node_value = new Node(0);
+    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %d: '%s' - Illgeal UINT32 Leading 0 \n", yylineno, yytext);
     return INT;
 }
 {UINT32_16_error_illgeal_char} {
     isError=1;
-    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %s: UINT32_16_error_illgeal_char \n", yytext);
-    return ILLEGAL_TOKEN;
+    yylval.Node_value = new Node(0);
+    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %d: '%s' - UINT32_16_error_illgeal_char \n", yylineno, yytext);
+    return INT;
 }
 {CHAR} {
     yylval.Node_value = new Node("CHAR",yytext,Node_TYPE::STRING);
-    //yylval.Node_value->print(0);
     return CHAR;
 }
 {CHAR_16} {
-    //std::cout << yyleng << std::endl;
     yylval.Node_value = new Node("CHAR",yytext,Node_TYPE::STRING);
-    //yylval.Node_value->print(0);
     return CHAR;
 }
 {CHAR_16_more0} {
     isError=1;
     fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
-    return ILLEGAL_TOKEN;
+    yylval.Node_value = new Node('0');
+    return CHAR;
 }
 {CHAR_16_illgeal_char} {
     isError=1;
     fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
-    return ILLEGAL_TOKEN;
+    yylval.Node_value = new Node('0');
+    return CHAR;
 }
 {CHAR_16_toolong} {
     isError=1;
     fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
-    return ILLEGAL_TOKEN;
+    yylval.Node_value = new Node('0');
+    return CHAR;
 }
 [^0-9a-zA-Z_'\\\(\)\[\]\{\}\;\,\+\-\*\/] {
     isError=1;
     // illgeal characters
     fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
     //yymore();
-    return ILLEGAL_TOKEN;
+    return ID;
 }
 [0-9]*{ID} {
     isError=1;
-    // Illgeal ID
     fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
     // TODO
     return ID;
