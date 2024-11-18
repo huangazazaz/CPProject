@@ -5,5 +5,5 @@
 
 void ierror(int line, IERROR_TYPE type)
 {
-    fprintf(PARSER_error_OUTPUT, "Missing %s at line %d\n", ierror_map.at(type).c_str(), line);
+    fprintf(PARSER_error_OUTPUT, "Error at Line %d: Missing %s\n", line, ierror_map.at(type).c_str());
 }

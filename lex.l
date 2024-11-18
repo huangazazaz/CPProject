@@ -23,6 +23,7 @@ digit [0-9]
 digit_16 [0-9a-fA-F]
 UINT32_10 (0|([1-9]{digit}*))
 UINT32_16 0[xX](0|[1-9a-fA-F]{digit_16}*)
+UINT32_16_error_leading_0 0(0|[1-9a-fA-F]{digit_16}*)
 UINT32_16_error_more_0 0[xX](0{2,}{digit_16}*)
 UINT32_16_error_illgeal_char 0[xX]([1-9a-fA-F]{digit_16}*[g-z]{digit_16}*)
 UINT32 {UINT32_10}|{UINT32_16}
@@ -95,7 +96,6 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 "]" {yylval.Node_value = new  Node("RB");return RB;}
 "{" {yylval.Node_value = new  Node("LC");return LC;}
 "}" {yylval.Node_value = new  Node("RC");return RC;}
-"?" {yylval.Node_value = new  Node("RC");return TERN;}
 ":" {yylval.Node_value = new  Node("RC");return COLON;}
 "true" {
     yylval.Node_value = new  Node(true);
@@ -123,8 +123,14 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 }
 {UINT32_16_error_more_0} {
     isError=1;
-    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %s: Illgeal UINT32 hex-Leading 0 \n", yytext);
-    return ILLEGAL_TOKEN;
+    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %d: Illgeal UINT32 hex-Leading 0 \n", yylineno);
+    return INT;
+}
+{UINT32_16_error_leading_0} {
+    isError=1;
+    yylval.Node_value = new Node(atoi(yytext));
+    fprintf(LEXER_ERROR_OUTPUT, "Error at Line %d: Illgeal UINT32 Leading 0 \n", yylineno);
+    return INT;
 }
 {UINT32_16_error_illgeal_char} {
     isError=1;

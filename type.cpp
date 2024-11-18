@@ -46,6 +46,7 @@ Type *Type::getPrimitiveType(Node_TYPE type)
     }
     default:
     {
+        return Type::getPrimitiveINT();
     }
     }
 }

@@ -39,10 +39,16 @@ void rvalueLeftSetError(int lineNum)
     printf("Error at Line %d: rvalue appears on the left-hand side of the assignment operator\n", lineNum);
 }
 
-void binaryOperatorNonNumber(int lineNum)
+void unmatchingOperatorNonNumber(int lineNum)
 {
     is_sem_error = 1;
-    printf("Error at Line %d: binary operation on non-number variables\n", lineNum);
+    printf("Error at Line %d: unmatching operation on non-number variables\n", lineNum);
+}
+
+void unmatchingOperatorNonBoolean(int lineNum)
+{
+    is_sem_error = 1;
+    printf("Error at Line %d: unmatching operation on non-boolean variables\n", lineNum);
 }
 
 void returnTypeDisMatch(int lineNum)

@@ -10,315 +10,342 @@ Program (1)
       CompSt (1)
         LC
         CompList (3)
-          Def (3)
-            Specifier (3)
-              TYPE: int
-            DecList (3)
-              Dec (3)
-                VarDec (3)
-                  ID: a
-            SEMI
-          CompList (4)
-            Def (4)
-              Specifier (4)
+          Comp (3)
+            Def (3)
+              Specifier (3)
                 TYPE: int
-              DecList (4)
-                Dec (4)
-                  VarDec (4)
-                    ID: b
-                  ASSIGN
-                  Exp (4)
-                    MINUS
-                    Exp (4)
-                      INT: 2
+              DecList (3)
+                Dec (3)
+                  VarDec (3)
+                    ID: a
               SEMI
-            CompList (5)
-              Def (5)
-                Specifier (5)
+          CompList (4)
+            Comp (4)
+              Def (4)
+                Specifier (4)
                   TYPE: int
-                DecList (5)
-                  Dec (5)
-                    VarDec (5)
-                      ID: i
-                    ASSIGN
-                    Exp (5)
+                DecList (4)
+                  Dec (4)
+                    VarDec (4)
                       ID: b
-                SEMI
-              CompList (6)
-                Stmt (6)
-                  Exp (6)
-                    Exp (6)
-                      ID: a
                     ASSIGN
-                    Exp (6)
-                      ID: i
+                    Exp (4)
+                      MINUS
+                      Exp (4)
+                        INT: 2
+                SEMI
+            CompList (5)
+              Comp (5)
+                Def (5)
+                  Specifier (5)
+                    TYPE: int
+                  DecList (5)
+                    Dec (5)
+                      VarDec (5)
+                        ID: i
+                      ASSIGN
+                      Exp (5)
+                        ID: b
                   SEMI
-                CompList (8)
-                  Stmt (8)
-                    Exp (8)
-                      Exp (8)
+              CompList (6)
+                Comp (6)
+                  Stmt (6)
+                    Exp (6)
+                      Exp (6)
                         ID: a
                       ASSIGN
-                      Exp (8)
-                        INT: 171
+                      Exp (6)
+                        ID: i
                     SEMI
-                  CompList (9)
-                    Stmt (9)
-                      Exp (9)
-                        Exp (9)
+                CompList (8)
+                  Comp (8)
+                    Stmt (8)
+                      Exp (8)
+                        Exp (8)
                           ID: a
                         ASSIGN
-                        Exp (9)
-                          INT: 2
+                        Exp (8)
+                          INT: 171
                       SEMI
-                    CompList (11)
-                      Stmt (11)
-                        Exp (11)
-                          Exp (11)
+                  CompList (9)
+                    Comp (9)
+                      Stmt (9)
+                        Exp (9)
+                          Exp (9)
                             ID: a
                           ASSIGN
+                          Exp (9)
+                            INT: 2
+                        SEMI
+                    CompList (11)
+                      Comp (11)
+                        Stmt (11)
                           Exp (11)
                             Exp (11)
                               ID: a
-                            MINUS
+                            ASSIGN
                             Exp (11)
+                              Exp (11)
+                                ID: a
                               MINUS
                               Exp (11)
-                                INT: 15
-                        SEMI
-                      CompList (13)
-                        Stmt (13)
-                          Exp (13)
-                            Exp (13)
-                              ID: a
-                            ASSIGN
-                            Exp (13)
-                              Exp (13)
-                                ID: a
-                              PLUS
-                              Exp (13)
-                                ID: b
+                                MINUS
+                                Exp (11)
+                                  INT: 15
                           SEMI
-                        CompList (14)
-                          Stmt (14)
-                            Exp (14)
-                              Exp (14)
+                      CompList (13)
+                        Comp (13)
+                          Stmt (13)
+                            Exp (13)
+                              Exp (13)
                                 ID: a
                               ASSIGN
+                              Exp (13)
+                                Exp (13)
+                                  ID: a
+                                PLUS
+                                Exp (13)
+                                  ID: b
+                            SEMI
+                        CompList (14)
+                          Comp (14)
+                            Stmt (14)
                               Exp (14)
                                 Exp (14)
                                   ID: a
-                                MUL
-                                Exp (14)
-                                  ID: b
-                            SEMI
-                          CompList (15)
-                            Stmt (15)
-                              Exp (15)
-                                Exp (15)
-                                  ID: a
                                 ASSIGN
-                                Exp (15)
-                                  Exp (15)
+                                Exp (14)
+                                  Exp (14)
                                     ID: a
-                                  DIV
-                                  Exp (15)
+                                  MUL
+                                  Exp (14)
                                     ID: b
                               SEMI
-                            CompList (16)
-                              Stmt (16)
-                                Exp (16)
-                                  Exp (16)
+                          CompList (15)
+                            Comp (15)
+                              Stmt (15)
+                                Exp (15)
+                                  Exp (15)
                                     ID: a
                                   ASSIGN
+                                  Exp (15)
+                                    Exp (15)
+                                      ID: a
+                                    DIV
+                                    Exp (15)
+                                      ID: b
+                                SEMI
+                            CompList (16)
+                              Comp (16)
+                                Stmt (16)
                                   Exp (16)
                                     Exp (16)
                                       ID: a
-                                    MOD
-                                    Exp (16)
-                                      ID: b
-                                SEMI
-                              CompList (18)
-                                Stmt (18)
-                                  Exp (18)
-                                    Exp (18)
-                                      ID: a
                                     ASSIGN
-                                    Exp (18)
-                                      Exp (18)
+                                    Exp (16)
+                                      Exp (16)
                                         ID: a
-                                      BOR
-                                      Exp (18)
+                                      MOD
+                                      Exp (16)
                                         ID: b
                                   SEMI
-                                CompList (19)
-                                  Stmt (19)
-                                    Exp (19)
-                                      Exp (19)
+                              CompList (18)
+                                Comp (18)
+                                  Stmt (18)
+                                    Exp (18)
+                                      Exp (18)
                                         ID: a
                                       ASSIGN
+                                      Exp (18)
+                                        Exp (18)
+                                          ID: a
+                                        BOR
+                                        Exp (18)
+                                          ID: b
+                                    SEMI
+                                CompList (19)
+                                  Comp (19)
+                                    Stmt (19)
                                       Exp (19)
                                         Exp (19)
                                           ID: a
-                                        BAND
-                                        Exp (19)
-                                          ID: b
-                                    SEMI
-                                  CompList (20)
-                                    Stmt (20)
-                                      Exp (20)
-                                        Exp (20)
-                                          ID: a
                                         ASSIGN
-                                        Exp (20)
-                                          Exp (20)
+                                        Exp (19)
+                                          Exp (19)
                                             ID: a
-                                          XOR
-                                          Exp (20)
+                                          BAND
+                                          Exp (19)
                                             ID: b
                                       SEMI
-                                    CompList (22)
-                                      Stmt (22)
-                                        Exp (22)
-                                          Exp (22)
-                                            ID: b
-                                          PLUS_ASSIGN
-                                          Exp (22)
+                                  CompList (20)
+                                    Comp (20)
+                                      Stmt (20)
+                                        Exp (20)
+                                          Exp (20)
                                             ID: a
-                                        SEMI
-                                      CompList (23)
-                                        Stmt (23)
-                                          Exp (23)
-                                            Exp (23)
+                                          ASSIGN
+                                          Exp (20)
+                                            Exp (20)
+                                              ID: a
+                                            XOR
+                                            Exp (20)
                                               ID: b
-                                            MINUS_ASSIGN
-                                            Exp (23)
+                                        SEMI
+                                    CompList (22)
+                                      Comp (22)
+                                        Stmt (22)
+                                          Exp (22)
+                                            Exp (22)
+                                              ID: b
+                                            PLUS_ASSIGN
+                                            Exp (22)
                                               ID: a
                                           SEMI
-                                        CompList (24)
-                                          Stmt (24)
-                                            Exp (24)
-                                              Exp (24)
+                                      CompList (23)
+                                        Comp (23)
+                                          Stmt (23)
+                                            Exp (23)
+                                              Exp (23)
                                                 ID: b
-                                              MUL_ASSIGN
-                                              Exp (24)
+                                              MINUS_ASSIGN
+                                              Exp (23)
                                                 ID: a
                                             SEMI
-                                          CompList (25)
-                                            Stmt (25)
-                                              Exp (25)
-                                                Exp (25)
+                                        CompList (24)
+                                          Comp (24)
+                                            Stmt (24)
+                                              Exp (24)
+                                                Exp (24)
                                                   ID: b
-                                                DIV_ASSIGN
-                                                Exp (25)
+                                                MUL_ASSIGN
+                                                Exp (24)
                                                   ID: a
                                               SEMI
-                                            CompList (28)
-                                              Def (28)
-                                                Specifier (28)
-                                                  TYPE: float
-                                                DecList (28)
-                                                  Dec (28)
-                                                    VarDec (28)
-                                                      ID: f
-                                                    ASSIGN
-                                                    Exp (28)
-                                                      FLOAT: 3.500000
+                                          CompList (25)
+                                            Comp (25)
+                                              Stmt (25)
+                                                Exp (25)
+                                                  Exp (25)
+                                                    ID: b
+                                                  DIV_ASSIGN
+                                                  Exp (25)
+                                                    ID: a
                                                 SEMI
-                                              CompList (29)
-                                                Stmt (29)
-                                                  Exp (29)
-                                                    Exp (29)
-                                                      ID: f
-                                                    MINUS_ASSIGN
-                                                    Exp (29)
-                                                      MINUS
-                                                      Exp (29)
-                                                        FLOAT: 3.100000
+                                            CompList (28)
+                                              Comp (28)
+                                                Def (28)
+                                                  Specifier (28)
+                                                    TYPE: float
+                                                  DecList (28)
+                                                    Dec (28)
+                                                      VarDec (28)
+                                                        ID: f
+                                                      ASSIGN
+                                                      Exp (28)
+                                                        FLOAT: 3.500000
                                                   SEMI
-                                                CompList (32)
-                                                  Def (32)
-                                                    Specifier (32)
-                                                      TYPE: char
-                                                    DecList (32)
-                                                      Dec (32)
-                                                        VarDec (32)
-                                                          ID: c
-                                                        ASSIGN
-                                                        Exp (32)
-                                                          CHAR: '$'
+                                              CompList (29)
+                                                Comp (29)
+                                                  Stmt (29)
+                                                    Exp (29)
+                                                      Exp (29)
+                                                        ID: f
+                                                      MINUS_ASSIGN
+                                                      Exp (29)
+                                                        MINUS
+                                                        Exp (29)
+                                                          FLOAT: 3.100000
                                                     SEMI
-                                                  CompList (33)
-                                                    Stmt (33)
-                                                      Exp (33)
-                                                        Exp (33)
-                                                          ID: c
-                                                        ASSIGN
-                                                        Exp (33)
-                                                          CHAR: '4'
+                                                CompList (32)
+                                                  Comp (32)
+                                                    Def (32)
+                                                      Specifier (32)
+                                                        TYPE: char
+                                                      DecList (32)
+                                                        Dec (32)
+                                                          VarDec (32)
+                                                            ID: c
+                                                          ASSIGN
+                                                          Exp (32)
+                                                            CHAR: '$'
                                                       SEMI
-                                                    CompList (36)
-                                                      Def (36)
-                                                        Specifier (36)
-                                                          TYPE: bool
-                                                        DecList (36)
-                                                          Dec (36)
-                                                            VarDec (36)
-                                                              ID: bo
-                                                            ASSIGN
-                                                            Exp (36)
-                                                              Exp (36)
-                                                                ID: a
-                                                              EQ
-                                                              Exp (36)
-                                                                ID: b
+                                                  CompList (33)
+                                                    Comp (33)
+                                                      Stmt (33)
+                                                        Exp (33)
+                                                          Exp (33)
+                                                            ID: c
+                                                          ASSIGN
+                                                          Exp (33)
+                                                            CHAR: '4'
                                                         SEMI
-                                                      CompList (38)
-                                                        Stmt (38)
-                                                          Exp (38)
-                                                            Exp (38)
-                                                              ID: bo
-                                                            ASSIGN
-                                                            Exp (38)
-                                                              Exp (38)
-                                                                ID: a
-                                                              NE
-                                                              Exp (38)
-                                                                ID: b
-                                                          SEMI
-                                                        CompList (39)
-                                                          Stmt (39)
-                                                            Exp (39)
-                                                              Exp (39)
+                                                    CompList (36)
+                                                      Comp (36)
+                                                        Def (36)
+                                                          Specifier (36)
+                                                            TYPE: bool
+                                                          DecList (36)
+                                                            Dec (36)
+                                                              VarDec (36)
                                                                 ID: bo
                                                               ASSIGN
-                                                              Exp (39)
-                                                                Exp (39)
+                                                              Exp (36)
+                                                                Exp (36)
                                                                   ID: a
-                                                                LT
-                                                                Exp (39)
+                                                                EQ
+                                                                Exp (36)
+                                                                  ID: b
+                                                          SEMI
+                                                      CompList (38)
+                                                        Comp (38)
+                                                          Stmt (38)
+                                                            Exp (38)
+                                                              Exp (38)
+                                                                ID: bo
+                                                              ASSIGN
+                                                              Exp (38)
+                                                                Exp (38)
+                                                                  ID: a
+                                                                NE
+                                                                Exp (38)
                                                                   ID: b
                                                             SEMI
-                                                          CompList (40)
-                                                            Stmt (40)
-                                                              Exp (40)
-                                                                Exp (40)
+                                                        CompList (39)
+                                                          Comp (39)
+                                                            Stmt (39)
+                                                              Exp (39)
+                                                                Exp (39)
                                                                   ID: bo
                                                                 ASSIGN
-                                                                Exp (40)
-                                                                  Exp (40)
+                                                                Exp (39)
+                                                                  Exp (39)
                                                                     ID: a
-                                                                  GE
-                                                                  Exp (40)
+                                                                  LT
+                                                                  Exp (39)
                                                                     ID: b
                                                               SEMI
-                                                            CompList (41)
-                                                              Stmt (41)
-                                                                Exp (41)
-                                                                  Exp (41)
+                                                          CompList (40)
+                                                            Comp (40)
+                                                              Stmt (40)
+                                                                Exp (40)
+                                                                  Exp (40)
                                                                     ID: bo
                                                                   ASSIGN
-                                                                  Exp (41)
-                                                                    BOOLEAN: 1
+                                                                  Exp (40)
+                                                                    Exp (40)
+                                                                      ID: a
+                                                                    GE
+                                                                    Exp (40)
+                                                                      ID: b
                                                                 SEMI
+                                                            CompList (41)
+                                                              Comp (41)
+                                                                Stmt (41)
+                                                                  Exp (41)
+                                                                    Exp (41)
+                                                                      ID: bo
+                                                                    ASSIGN
+                                                                    Exp (41)
+                                                                      BOOLEAN: 1
+                                                                  SEMI
         RC

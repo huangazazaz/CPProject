@@ -1,0 +1,4 @@
+int test_1_r04(
+{
+    return 0;
+}

@@ -19,7 +19,9 @@ void nonMatchTypeBothSide(int lineNum);
 
 void rvalueLeftSetError(int lineNum);
 
-void binaryOperatorNonNumber(int lineNum);
+void unmatchingOperatorNonNumber(int lineNum);
+
+void unmatchingOperatorNonBoolean(int lineNum);
 
 void returnTypeDisMatch(int lineNum);
 

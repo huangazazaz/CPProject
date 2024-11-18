@@ -1,4 +1,4 @@
 Error at Line 4: unknown lexeme $
 Error at Line 4: redefine variable: i
-Missing semicolon ; at line 6
+Error at Line 6: Missing semicolon ';'
 Error at Line 8: unknown lexeme @

@@ -448,10 +448,10 @@ void getNamesOfDefList(Node *node, vector<Node *> &namesofFileds)
             }
             nodeofField = nodeofField->get_nodes(1);
         };
-        std::for_each(std::cbegin(namesofFileds), std::cend(namesofFileds), [](auto item)
-                      {
-                          // std::cout << getStrValueFromDecList(item) << " ";
-                      });
+        // std::for_each(std::cbegin(namesofFileds), std::cend(namesofFileds), [](auto item)
+        //               {
+        //                   // std::cout << getStrValueFromDecList(item) << " ";
+        //               });
         // std::cout << '\n';
     }
 }
@@ -556,6 +556,7 @@ void checkIdExists(Node *node, int lineNum)
     string idName = std::get<string>(node->value);
     if (symbolTable.count(idName) == 0)
     {
+        symbolTable[idName] = Type::getPrimitiveType(Node_TYPE::INT);
         variableNoDefinition(lineNum, idName);
     }
 }
@@ -872,8 +873,6 @@ void checkArrayExists(Node *Exp)
 
 bool checkIntegerType(Node *exp, const std::function<void(int)> &func)
 {
-    bool test1 = (exp->type == nullptr) ||
-                 (exp->type->category != CATEGORY::PRIMITIVE || std::get<Node_TYPE>(exp->type->type) != Node_TYPE::INT);
     if (exp->type != Type::getPrimitiveINT())
     {
         func(std::get<int>(exp->value));
@@ -883,8 +882,6 @@ bool checkIntegerType(Node *exp, const std::function<void(int)> &func)
 }
 bool checkBooleanType(Node *exp, const std::function<void(int)> &func)
 {
-    bool test1 = (exp->type == nullptr) ||
-                 (exp->type->category != CATEGORY::PRIMITIVE || std::get<Node_TYPE>(exp->type->type) != Node_TYPE::BOOLEAN);
     if (exp->type != Type::getPrimitiveBOOLEAN())
     {
         func(std::get<int>(exp->value));
@@ -964,7 +961,7 @@ void getComparisonOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
 
 bool checkBoolOperatorType(Node *exp)
 {
-    return checkBooleanType(exp, binaryOperatorNonNumber);
+    return checkBooleanType(exp, unmatchingOperatorNonBoolean);
 }
 
 void getBoolOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
@@ -981,13 +978,13 @@ Node_TYPE checkAlrthOperatorType(Node *exp)
 {
     if (exp->type == nullptr)
     {
-        binaryOperatorNonNumber(std::get<int>(exp->value));
+        unmatchingOperatorNonNumber(std::get<int>(exp->value));
         return Node_TYPE::LINE;
     }
     if (exp->type->category != CATEGORY::PRIMITIVE ||
         (exp->type != Type::getPrimitiveINT() && exp->type != Type::getPrimitiveFLOAT()))
     {
-        binaryOperatorNonNumber(std::get<int>(exp->value));
+        unmatchingOperatorNonNumber(std::get<int>(exp->value));
         return Node_TYPE::LINE;
     }
     return std::get<Node_TYPE>(exp->type->type);

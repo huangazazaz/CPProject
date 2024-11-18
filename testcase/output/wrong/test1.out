@@ -1,8 +1,9 @@
 Error at Line 22: undefined variable: string
-Missing semicolon ; at line 22
+Error at Line 22: Missing semicolon ';'
 Error at Line 22: undefined variable: lol
 Error at Line 22: unknown lexeme "
-Missing semicolon ; at line 22
+Error at Line 22: Missing semicolon ';'
 Error at Line 22: unknown lexeme "
 Error at Line 22: undefined variable: hehehe
-Missing semicolon ; at line 22
+Error at Line 22: Missing semicolon ';'
+Error at Line 18: Missing closing curly braces  '}'

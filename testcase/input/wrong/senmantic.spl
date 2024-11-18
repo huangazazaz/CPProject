@@ -1,0 +1,31 @@
+int main(){
+    
+    a = 5;
+
+    undefineFunc();
+
+    int redefinedVar;
+    int redefinedVar;
+
+    3 = 4;
+
+    int is[2];
+
+    int i = 3.5
+
+    i = is + 3;
+
+    return 0;
+}
+
+int unmatchingFunc(){
+    return 2.5;
+}
+
+int redefinedFunc(){
+
+}
+
+int redefinedFunc(){
+
+}

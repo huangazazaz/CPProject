@@ -14,7 +14,7 @@ CPP = $(GPP) $(CXX_FLAGS)
 .lex:lex.l
 	$(FLEX) lex.l
 .syntax:syntax.y
-	$(BISON) -t -d -v syntax.y
+	$(BISON) -t -d -v -Wcounterexamples syntax.y
 .prepare:.lex .syntax
 .node: .prepare
 	$(CPP) -c node.cpp -o node.o
