@@ -89,6 +89,7 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 "||" {yylval.Node_value = new  Node("OR");return OR;}
 "|" {yylval.Node_value = new  Node("BOR");return BOR;}
 "^" {yylval.Node_value = new  Node("XOR");return XOR;}
+"?" {yylval.Node_value = new  Node("TERN");return TERN;}
 "!" {yylval.Node_value = new  Node("NOT");return NOT;}
 "(" {yylval.Node_value = new  Node("LP");return LP;}
 ")" {yylval.Node_value = new  Node("RP");return RP;}
@@ -96,7 +97,7 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 "]" {yylval.Node_value = new  Node("RB");return RB;}
 "{" {yylval.Node_value = new  Node("LC");return LC;}
 "}" {yylval.Node_value = new  Node("RC");return RC;}
-":" {yylval.Node_value = new  Node("RC");return COLON;}
+":" {yylval.Node_value = new  Node("COLON");return COLON;}
 "true" {
     yylval.Node_value = new  Node(true);
     return BOOLEAN;

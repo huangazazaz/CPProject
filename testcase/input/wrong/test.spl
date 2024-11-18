@@ -1,4 +1,4 @@
 int test_1_r05()
 {
-  int a = 0x;
+ int a = true ? 2  3;
 }

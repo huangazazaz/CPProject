@@ -29,28 +29,28 @@
 %nonassoc <Node_value> LOWER_THAN_ELSE
 %nonassoc <Node_value> ELSE
 %token <Node_value> TYPE STRUCT
-%token <Node_value> IF WHILE RETURN
+%token <Node_value> IF WHILE RETURN FOR
 %token <Node_value> INT
 %token <Node_value> FLOAT
 %token <Node_value> CHAR
 %token <Node_value> BOOLEAN
 %token <Node_value> ID
 %right <Node_value> ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN
+%nonassoc <Node_value> TERN COLON
 %left <Node_value> OR
 %left <Node_value> AND
 %left <Node_value> BOR
 %left <Node_value> XOR
 %left <Node_value> BAND
-%left <Node_value> LT LE GT GE NE EQ
+%nonassoc <Node_value> LT LE GT GE NE EQ
 %nonassoc LOWER_MINUS LOWER_PLUS
-%left <Node_value> PLUS MINUS MOD
+%left <Node_value> PLUS MINUS
+%left <Node_value> MOD
 %left <Node_value> MUL DIV
 %right <Node_value> NOT
 %left <Node_value> LP RP LB RB DOT
 %token <Node_value> SEMI COMMA
 %token <Node_value> LC RC
-%token <Node_value> FOR
-%token <Node_value> COLON
 
 %type <Node_value> Program ExtDefList
 %type <Node_value> ExtDef ExtDecList Specifier StructSpecifier VarDec Specifier_FunDec_Recv
@@ -347,17 +347,32 @@ Exp: Exp ASSIGN Exp {
         $$=new Node("Exp",@$.first_line);
         $$->push_back($1,$2);
         $$->type=$2->type;}
-    // | Exp TERN Exp COLON Exp {
-
+    | Exp TERN Exp COLON Exp {
+        $$=new Node("Exp",@$.first_line); 
+        $$->type=$3->type;
+        $$->push_back($1,$2,$3,$4,$5); 
+        if(!checkBoolOperatorType($1)){
+            invalidTernaryOperator(@1.first_line);
+        };
+        checkTypeMatch($3,$5,@3.first_line);
+    }
+    // | Exp TERN Exp Exp error {
     //     $$=new Node("Exp",@$.first_line); 
     //     $$->type=$3->type;
-    //     $$->push_back($1,$2,$3,$4,$5); 
-
+    //     $$->push_back($1,$2,$3,$4,new Node("COLON")); 
     //     if(!checkBoolOperatorType($1)){
     //         invalidTernaryOperator(@1.first_line);
     //     };
-    //     checkTypeMatch($3,$5,@3.first_line);
-        
+    //     checkTypeMatch($3,$4,@3.first_line);
+    // }
+    // | Exp Exp COLON Exp error {
+    //     $$=new Node("Exp",@$.first_line); 
+    //     $$->type=$3->type;
+    //     $$->push_back($1,$2,$3,$4,new Node("TERN")); 
+    //     if(!checkBoolOperatorType($1)){
+    //         invalidTernaryOperator(@1.first_line);
+    //     };
+    //     checkTypeMatch($2,$4,@2.first_line);
     // }
     // | Exp TERN COLON Exp error{
     //     printf("Wrong ternary declaration!!\n");
@@ -448,15 +463,13 @@ Exp: Exp ASSIGN Exp {
     | CHAR {
         $$=new Node("Exp",@$.first_line);$$->push_back($1);
         $$->type = Type::getPrimitiveCHAR();}
-    | Exp ILLEGAL_TOKEN Exp {}
-    | ILLEGAL_TOKEN {}
     ;
 
 %%
 void yyerror(const char *s){
     isError=1;
     if(s[0]  == '0'){}
-    // fprintf(PARSER_error_OUTPUT,"Error at Line %d: ",yylloc.first_line-1);
+    fprintf(PARSER_error_OUTPUT,"Error at Line %d: ",yylloc.first_line-1);
     // fprintf(PARSER_error_OUTPUT, "syntax Error: %s\n", s);
     //lineinfor();
 }
