@@ -31,7 +31,9 @@ enum class IERROR_TYPE
     EXPXOR,
     EXPIF,
     EXPWHILE,
+    EXPTERN,
     IF,
+    COLON,
 };
 
 const std::unordered_map<IERROR_TYPE, std::string> ierror_map = {
@@ -41,6 +43,7 @@ const std::unordered_map<IERROR_TYPE, std::string> ierror_map = {
     {IERROR_TYPE::LC, R"(left curly braces  '{')"},
     {IERROR_TYPE::LB, R"(left bracket '[')"},
     {IERROR_TYPE::LP, R"(left parenthesis '(')"},
+    {IERROR_TYPE::COLON, R"(colon ':')"},
     {IERROR_TYPE::LVALUE, R"(left value)"},
     {IERROR_TYPE::RVALUE, R"(right value)"},
     {IERROR_TYPE::VAR, R"(variable)"},
@@ -60,6 +63,7 @@ const std::unordered_map<IERROR_TYPE, std::string> ierror_map = {
     {IERROR_TYPE::EXPXOR, R"(Exp after ^)"},
     {IERROR_TYPE::EXPIF, R"(Exp in if)"},
     {IERROR_TYPE::EXPWHILE, R"(Exp in while)"},
+    {IERROR_TYPE::EXPTERN, R"(Exp in ternary)"},
     {IERROR_TYPE::IF, R"('if' before 'else')"},
 };
 

@@ -54,7 +54,7 @@
 
 %type <Node_value> Program ExtDefList
 %type <Node_value> ExtDef ExtDecList Specifier StructSpecifier VarDec Specifier_FunDec_Recv
-%type <Node_value> FunDec VarList ParamDec CompSt Comp CompList Stmt DefList
+%type <Node_value> FunDec VarList ParamDec CompSt Comp CompList Stmt TernaryStmt DefList
 %type <Node_value> Def DecList Dec Args Exp
 %%
 /* high-level definition */
@@ -264,6 +264,45 @@ Args: Exp COMMA Args  {$$=new Node("Args",@$.first_line); $$->push_back($1,$2,$3
         $$=new Node("Args",@$.first_line); $$->push_back($1);}
     | Exp {$$=new Node("Args",@$.first_line);$$->push_back($1);}
     ;
+
+TernaryStmt:
+      Exp TERN Exp COLON Exp {
+          $$ = new Node("TernaryStmt", @$.first_line);
+          $$->type = $3->type;
+          $$->push_back($1, $2, $3, $4, $5);
+          if (!checkBoolOperatorType($1)) {
+              invalidTernaryOperator(@1.first_line);
+          }
+          checkTypeMatch($3, $5, @3.first_line);
+      }
+    // | Exp TERN Exp error Exp {
+    //       ierror(@$.first_line, IERROR_TYPE::COLON);
+    //       $$ = new Node("TernaryStmt", @$.first_line);
+    //       $$->push_back($1, $2, $3, new Node("COLON"), $5); // 临时使用 $3 补充类型
+    //   }
+    | Exp TERN error COLON Exp {
+          ierror(@$.first_line, IERROR_TYPE::EXPTERN);
+          $$ = new Node("TernaryStmt", @$.first_line);
+          Node* n = new Node("Exp",@$.first_line);
+          n->push_back(new Node("INT"));
+          n->type = Type::getPrimitiveINT();
+          $$->push_back($1, $2, n, $4, $5);
+      }
+    | Exp TERN Exp COLON error {
+          ierror(@$.first_line, IERROR_TYPE::EXPTERN);
+          $$ = new Node("TernaryStmt", @$.first_line);
+          Node* n = new Node("Exp",@$.first_line);
+          n->push_back(new Node("INT"));
+          n->type = Type::getPrimitiveINT();
+          $$->push_back($1, $2, $3, $4, n);
+      }
+    // | Exp error Exp COLON Exp {
+    //       ierror(@$.first_line, IERROR_TYPE::TERN);
+    //       $$ = new Node("TernaryStmt", @$.first_line);
+    //       $$->push_back($1, new Node("TERN"), $3, $4, $5);
+    //   };
+
+
 Exp: Exp ASSIGN Exp {
     $$=new Node("Exp",@$.first_line);
     $$->push_back($1,$2,$3);
@@ -287,11 +326,33 @@ Exp: Exp ASSIGN Exp {
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
     }
+    | Exp PLUS_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | PLUS_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
     | Exp MINUS_ASSIGN Exp {
     $$=new Node("Exp",@$.first_line);
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp MINUS_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | MINUS_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
     }
     | Exp MUL_ASSIGN Exp {
     $$=new Node("Exp",@$.first_line);
@@ -299,11 +360,33 @@ Exp: Exp ASSIGN Exp {
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
     }
+    | Exp MUL_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | MUL_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
     | Exp DIV_ASSIGN Exp {
     $$=new Node("Exp",@$.first_line);
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp DIV_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | DIV_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
     }
     | Exp AND Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getBoolOperatorType($$,$1,$3);}
     | Exp OR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getBoolOperatorType($$,$1,$3);}
@@ -347,14 +430,8 @@ Exp: Exp ASSIGN Exp {
         $$=new Node("Exp",@$.first_line);
         $$->push_back($1,$2);
         $$->type=$2->type;}
-    | Exp TERN Exp COLON Exp {
-        $$=new Node("Exp",@$.first_line); 
-        $$->type=$3->type;
-        $$->push_back($1,$2,$3,$4,$5); 
-        if(!checkBoolOperatorType($1)){
-            invalidTernaryOperator(@1.first_line);
-        };
-        checkTypeMatch($3,$5,@3.first_line);
+    | TernaryStmt {
+        $$=$1;
     }
     // | Exp TERN Exp Exp error {
     //     $$=new Node("Exp",@$.first_line); 
