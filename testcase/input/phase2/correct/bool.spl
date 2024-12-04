@@ -1,0 +1,12 @@
+int main(){
+    int a = 1;
+    int b = 2;
+    // boolean 类型声明与定义
+    bool bo = a == b;
+    // boolean 类型运算
+    bo = a != b;
+    bo = a < b;
+    bo = a >= b;
+    bo = true;
+
+}
