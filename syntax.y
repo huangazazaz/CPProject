@@ -408,41 +408,56 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($2,$1,$2);
     }
     | Exp AND Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getBoolOperatorType($$,$1,$3);}
+    | Exp AND error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getBoolOperatorType($$,$1,$1);}
     | Exp OR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getBoolOperatorType($$,$1,$3);}
+    | Exp OR error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getBoolOperatorType($$,$1,$1);}
     | Exp LT Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    | Exp LT error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp LE Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    | Exp LE error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp GT Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    | Exp GT error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp GE Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    | Exp GE error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp NE Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    | Exp NE error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp EQ Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    | Exp EQ error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp MOD Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp MOD error {ierror(@$.first_line, IERROR_TYPE::EXPMOD);
-    }
+    | Exp MOD error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
     | Exp PLUS Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp PLUS error {ierror(@$.first_line, IERROR_TYPE::EXPPLUS);
-    }
+    | Exp PLUS error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
     | Exp MINUS Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp MINUS error {ierror(@$.first_line, IERROR_TYPE::EXPMINUS);
-    }
+    | Exp MINUS error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
     | Exp MUL Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp MUL error {ierror(@$.first_line, IERROR_TYPE::EXPMUL);
-    }
+    | Exp MUL error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
     | Exp DIV Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp DIV error {ierror(@$.first_line, IERROR_TYPE::EXPDIV);
-    }
+    | Exp DIV error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
     | Exp BOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp BOR error {ierror(@$.first_line, IERROR_TYPE::EXPBOR);
-    }
+    | Exp BOR error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
     | Exp BAND Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp BAND error {ierror(@$.first_line, IERROR_TYPE::EXPBAND);
-    }
+    | Exp BAND error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
     | Exp XOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
-    | Exp XOR error {ierror(@$.first_line, IERROR_TYPE::EXPXOR);
-    }
-    | LP Exp RP {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);$$->type=$2->type;} // lp is (
+    | Exp XOR error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
+    | LP Exp RP {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);$$->type=$2->type;}
     | LP Exp error {ierror(@$.first_line, IERROR_TYPE::RP);
-    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,new Node("RP"));$$->type=$2->type;
-    } // TODO 参数判断有问题， 比如 func(p1, );
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,new Node("RP"));$$->type=$2->type;}
     | MINUS Exp %prec LOWER_MINUS {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;checkAlrthOperatorType($2);}
     | PLUS Exp %prec LOWER_PLUS {$$=new Node("Exp",@$.first_line);$$->push_back($2);$$->type=$2->type;checkAlrthOperatorType($2);}
     | NOT Exp {
