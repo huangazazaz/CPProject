@@ -3,7 +3,7 @@ import subprocess
 
 correct_folder = "correct"
 wrong_folder = "wrong"
-choose_folders = ["correct", "wrong", "phase1"]
+choose_folders = ["correct", "wrong", "phase1", "phase2"]
 
 for choose_folder in choose_folders:
     input_folder = "testcase/input/" +  choose_folder 

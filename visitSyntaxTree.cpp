@@ -1,6 +1,5 @@
 #include <iterator>
 #include "visitSyntaxTree.hpp"
-#include "visitSyntaxTree2.hpp"
 #include "semanticError.hpp"
 
 static unordered_map<string, Node_TYPE> snt = {
