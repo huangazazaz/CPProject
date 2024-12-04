@@ -207,6 +207,18 @@ Stmt: Exp SEMI {
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
     }
+    | FOR LP Def Exp SEMI RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    }
+    | FOR LP Def SEMI Exp RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    }
+    | FOR LP Def SEMI RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6);
+    }
     | FOR LP Def Exp SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); }
     | FOR error Def Exp SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); }
     | WHILE error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); }
@@ -240,17 +252,24 @@ Def: Specifier DecList SEMI {
     $$->push_back($1,$2,$3);
     defVisit($$);
     }
-    | Specifier DecList error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
+    | Specifier DecList error {
+        ierror(@$.first_line, IERROR_TYPE::SEMI);
+        $$=new Node("Def",@$.first_line);
+        $$->push_back($1,$2,new Node("SEMI"));
+        defVisit($$);
+    };
     // | %prec LOWER_ERROR DecList SEMI {
     // ierror(@$.first_line, IERROR_TYPE::SPEC);
     // printf("error\n");
     // $$->print();
     // $2->print();
     // }
-    ;
+    
 DecList: Dec {$$=new Node("DecList",@$.first_line);$$->push_back($1);}
-    | Dec COMMA DecList {$$=new Node("DecList",@$.first_line); $$->push_back($1,$2,$3);}
-    | Dec  DecList error {ierror(@$.first_line, IERROR_TYPE::COMMA);}
+    | Dec COMMA DecList {
+        $$=new Node("DecList",@$.first_line); $$->push_back($1,$2,$3);}
+    | Dec DecList error {ierror(@$.first_line, IERROR_TYPE::COMMA);
+        $$=new Node("DecList",@$.first_line); $$->push_back($1,new Node("COMMA"),$2);}
 ;
 Dec: VarDec {$$=new Node("Dec",@$.first_line); $$->push_back($1);}
     | VarDec ASSIGN Exp {
@@ -547,7 +566,7 @@ void yyerror(const char *s){
     isError=1;
     if(s[0]  == '0'){}
     fprintf(PARSER_error_OUTPUT,"Error at Line %d: ",yylloc.first_line-1);
-    // fprintf(PARSER_error_OUTPUT, "syntax Error: %s\n", s);
+    fprintf(PARSER_error_OUTPUT, "syntax Error: %s\n", s);
     //lineinfor();
 }
 
