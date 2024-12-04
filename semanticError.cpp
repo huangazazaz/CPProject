@@ -44,6 +44,11 @@ void unmatchingOperatorNonNumber(int lineNum)
     is_sem_error = 1;
     printf("Error at Line %d: unmatching operation on non-number variables\n", lineNum);
 }
+void unmatchingOperatorNonComparison(int lineNum)
+{
+    is_sem_error = 1;
+    printf("Error at Line %d: unmatching operation on non-comparison variables\n", lineNum);
+}
 
 void unmatchingOperatorNonBoolean(int lineNum)
 {

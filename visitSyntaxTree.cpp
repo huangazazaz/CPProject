@@ -935,8 +935,8 @@ void getArrayType(Node *expOut, Node *expIn, Node *Integer)
 
 void getComparisonOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
 {
-    Node_TYPE check1 = checkAlrthOperatorType(expIn1);
-    Node_TYPE check2 = checkAlrthOperatorType(expIn2);
+    Node_TYPE check1 = checkComparisonOperatorType(expIn1);
+    Node_TYPE check2 = checkComparisonOperatorType(expIn2);
 
     if (check1 == Node_TYPE::LINE || check2 == Node_TYPE::LINE)
     {
@@ -973,6 +973,21 @@ void getBoolOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
     }
 }
 
+Node_TYPE checkComparisonOperatorType(Node *exp)
+{
+    if (exp->type == nullptr)
+    {
+        unmatchingOperatorNonComparison(std::get<int>(exp->value));
+        return Node_TYPE::LINE;
+    }
+    if (exp->type->category != CATEGORY::PRIMITIVE ||
+        (exp->type != Type::getPrimitiveINT() && exp->type != Type::getPrimitiveFLOAT() && exp->type != Type::getPrimitiveBOOLEAN()))
+    {
+        unmatchingOperatorNonComparison(std::get<int>(exp->value));
+        return Node_TYPE::LINE;
+    }
+    return std::get<Node_TYPE>(exp->type->type);
+}
 Node_TYPE checkAlrthOperatorType(Node *exp)
 {
     if (exp->type == nullptr)

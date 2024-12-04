@@ -51,6 +51,8 @@ bool checkBoolOperatorType(Node *exp);
 //
 Node_TYPE checkAlrthOperatorType(Node *exp);
 
+Node_TYPE checkComparisonOperatorType(Node *exp);
+
 void getBoolOperatorType(Node *expOut, Node *expIn1, Node *expIn2);
 
 void getComparisonOperatorType(Node *expOut, Node *expIn1, Node *expIn2);
