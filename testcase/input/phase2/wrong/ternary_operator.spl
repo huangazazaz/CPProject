@@ -1,0 +1,7 @@
+int main(){
+    int a = 5, b = 10;
+    int result;
+
+    // Mistake 1: Missing else part
+    result = (a > b) ? a; // Error: No value for the 'false' case
+}
