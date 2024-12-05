@@ -49,7 +49,7 @@ string categoryAndTypeNameFromType(Type *type)
     case CATEGORY::STRUCTURE:
     case CATEGORY::FUNCTION:
     {
-        typeName = scopeStack.scopes.back()[type->name]->name;
+        typeName = scopeStack.lookup(type->name)->name;
         // typeName = symbolTable[type->name]->name;
         break;
     }
@@ -154,13 +154,13 @@ void defPureTypeVisit(Node *node)
         const auto &PrimitiveType = Type::getPrimitiveType(_type);
         if (decList->get_nodes(0, 0)->nodes.size() == 1)
         {
-            scopeStack.scopes.back()[name] = PrimitiveType;
+             scopeStack.scopes.back()[name] = PrimitiveType;
             // symbolTable[name] = PrimitiveType;
             if (decList->get_nodes(0)->nodes.size() == 3)
             {
                 // checkTypeMatchType(symbolTable[std::get<string>(decList->get_nodes(0, 0, 0)->value)],
                 //                    decList->get_nodes(0, 2)->type, std::get<int>(node->value), nonMatchTypeBothSide);
-                checkTypeMatchType(scopeStack.scopes.back()[std::get<string>(decList->get_nodes(0, 0, 0)->value)],
+                checkTypeMatchType(scopeStack.lookup(std::get<string>(decList->get_nodes(0, 0, 0)->value)),
                                    decList->get_nodes(0, 2)->type, std::get<int>(node->value), nonMatchTypeBothSide);
             }
         }
@@ -214,7 +214,7 @@ void defStructTypeVisit(Node *node)
         do
         {
             // if (symbolTable.count(variableName) != 0)
-            if(scopeStack.scopes.back().count(variableName) != 0)
+            if(scopeStack.lookup(variableName) != nullptr)
             {
                 // We need to add another scope for struct
                 variableRedefined(std::get<int>(node->value), variableName);
@@ -241,7 +241,7 @@ void defStructTypeVisit(Node *node)
                 // checkTypeMatchType(symbolTable[variableName], decList->get_nodes(0, 2)->type,
                 //                    std::get<int>(decList->value),
                 //                    nonMatchTypeBothSide);
-                checkTypeMatchType(scopeStack.scopes.back()[variableName], decList->get_nodes(0, 2)->type,
+                checkTypeMatchType(scopeStack.lookup(variableName), decList->get_nodes(0, 2)->type,
                     std::get<int>(decList->value),
                     nonMatchTypeBothSide);
             }
@@ -315,7 +315,7 @@ void extDefVisit_SES_PureType(Node *node)
     do
     {
         // if (symbolTable.count(name) != 0)
-        if(scopeStack.scopes.back().count(name) != 0)
+        if(scopeStack.lookup(name) != nullptr)
         {
             variableRedefined(std::get<int>(node->value), name);
         }
@@ -615,15 +615,15 @@ void funDecVisit(Node *funDec)
     functionType->category = CATEGORY::FUNCTION;
     functionType->name = std::get<string>(funDec->get_nodes(0)->value);
     // if (symbolTable.count(functionType->name) != 0)
+    scopeStack.enterScope(std::unordered_map<std::string, Type*>());
     if (scopeStack.lookup(functionType->name) != nullptr)
 
     {
         functionRedefined(std::get<int>(funDec->value), functionType->name);
         return;
     }
-    scopeStack.scopes.back()[functionType->name] = functionType;
     // std::cout << "Entering scope via funDecVisit" << std::endl;
-    scopeStack.enterScope(std::unordered_map<std::string, Type*>());
+
 
     if (funDec->nodes.size() == 3)
     {
@@ -641,7 +641,7 @@ void funDecVisit(Node *funDec)
             string paramName = getStrValueFromVarDec(varDec);
             // string paramName = std::get<string>(varList->get_nodes(0, 1, 0)->value);
             // if (symbolTable.count(paramName) != 0)
-            if (scopeStack.scopes.back().count(paramName) != 0)
+            if (scopeStack.lookup(paramName) != nullptr)
             {
                 variableRedefined(std::get<int>(varList->value), paramName);
             }
@@ -687,6 +687,9 @@ void funDecVisit(Node *funDec)
             fieldListPtr = fieldListPtr->next;
         } while (true);
     }
+    
+    scopeStack.scopes[scopeStack.current_scope_level - 1][functionType->name] = functionType;
+
         
     // symbolTable[functionType->name] = functionType;
 }

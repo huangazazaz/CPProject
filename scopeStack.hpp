@@ -19,9 +19,10 @@ public:
     int current_scope_level = 0; // To track depth of current scope
     
     void enterScope(unordered_map<string,Type*> symbolTable) {
-        // std::cout << "Entered scope" << std::endl;
         scopes.push_back(symbolTable);
         ++current_scope_level;
+        // std::cout << "Entered scope " << current_scope_level <<std::endl;
+
     }
 
     // Exit the current scope by removing the last LocalSymbolTable from the vector
@@ -29,7 +30,7 @@ public:
         if (!scopes.empty()) {
             scopes.pop_back();
             --current_scope_level;
-            // std::cout << "Exited scope" << std::endl;
+            // std::cout << "Exited scope " << current_scope_level <<std::endl;
 
         }
     }
