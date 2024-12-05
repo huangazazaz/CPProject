@@ -4,6 +4,8 @@
     #include "type.hpp"
     #include "visitSyntaxTree.hpp"
     #include "semanticError.hpp"
+    #include "scopeStack.hpp"
+
     
     using std::string;
     using std::unordered_map;
@@ -15,6 +17,7 @@
     Node* root_node;
 
     unordered_map<string,Type*> symbolTable;
+    ScopeStack scopeStack;
     extern int isError;
     #define PARSER_error_OUTPUT stdout
     #include "ierror.hpp"
@@ -83,6 +86,7 @@ ExtDef: Specifier ExtDecList SEMI  {
         $$=new Node("ExtDef",@$.first_line);
         $$->push_back($1->nodes[0],$1->nodes[1],$2);
         extDefVisit_SFC($$);
+        scopeStack.exitScope();
     }
     | Specifier ExtDecList error  {ierror(@$.first_line, IERROR_TYPE::SEMI);
         $$=new Node("ExtDef",@$.first_line);
@@ -175,6 +179,9 @@ ParamDec: Specifier VarDec {$$=new Node("ParamDec",@$.first_line); $$->push_back
         var->push_back(new Node("ID",yytext,Node_TYPE::STRING));
         $$=new Node("ParamDec",@$.first_line); $$->push_back($1,var);}
     ;
+
+
+
 /* statement, planning to add scoping */
 CompSt: LC CompList RC {
         $$=new Node("CompSt",@$.first_line); 
@@ -192,6 +199,7 @@ Comp: Def {$$=new Node("Comp",@$.first_line); $$->push_back($1);}
 
 CompList: {$$=new Node("CompList",@$.first_line,Node_TYPE::NOTHING);}
     | Comp CompList {$$=new Node("CompList",@$.first_line); $$->push_back($1,$2);}
+
 
 Stmt: Exp SEMI {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
@@ -242,6 +250,7 @@ $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,n,$3,$4);}
 DefList: {$$=new Node("DefList",@$.first_line,Node_TYPE::NOTHING);}
     | Def DefList {$$=new Node("DefList",@$.first_line); $$->push_back($1,$2);}
     ;
+
 /*
 // Definition of basic name: int x,y,z;
 // */

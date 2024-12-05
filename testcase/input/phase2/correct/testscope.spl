@@ -1,5 +1,5 @@
 // Global variable
-int globalVar = 42;
+int globalVar;
 
 // Struct in global scope
 struct Point {
@@ -9,8 +9,8 @@ struct Point {
 };
 
 // Function to test variable shadowing and parameter scope
-int add(int x) {
-    int globalVar = 10; 
+int add(int x, int a) {
+    globalVar = 10; 
     x = x + globalVar;   
     int y = 20;
     y = x + y;
@@ -19,14 +19,13 @@ int add(int x) {
 
 int main() {
     int x = 5;
-    int globalVar = 100; 
-    int result = add(x); 
+    globalVar = 100; 
+    int result = add(x, x); 
 
     // More variable shadowing with implicit scope
-    int y = result + globalVar; 
-    int x = 50;                 
+    int y = result + globalVar;                 
 
     result = result + x;        
 
-    return result + globalVar;  
+    return 0;  
 }
