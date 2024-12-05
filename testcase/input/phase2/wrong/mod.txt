@@ -1,0 +1,4 @@
+Error at Line 2: syntax Error: syntax error
+Error at Line 3: Missing Exp after operator
+Error at Line 3: syntax Error: syntax error
+Error at Line 4: Missing Exp after operator
