@@ -677,7 +677,7 @@ void yyerror(const char *s){
     isError=1;
     if(s[0]  == '0'){}
     fprintf(PARSER_error_OUTPUT,"Error at Line %d: ",yylloc.first_line-1);
-    fprintf(PARSER_error_OUTPUT, "syntax Error: %s\n", s);
+    fprintf(PARSER_error_OUTPUT, "%s\n", s);
     //lineinfor();
 }
 

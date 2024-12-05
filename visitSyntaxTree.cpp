@@ -7,12 +7,14 @@ static unordered_map<string, Node_TYPE> snt = {
     {string("float"), Node_TYPE::FLOAT},
     {string("char"), Node_TYPE::CHAR},
     {string("bool"), Node_TYPE::BOOLEAN},
+    {string("wrong"), Node_TYPE::BOOLEAN},
 };
 static unordered_map<Node_TYPE, string> tns = {
     {Node_TYPE::INT, string("INT")},
     {Node_TYPE::FLOAT, string("FLOAT")},
     {Node_TYPE::CHAR, string("CHAR")},
     {Node_TYPE::BOOLEAN, string("BOOLEAN")},
+    {Node_TYPE::WRONG, string("WRONG")},
 };
 
 auto getArrayDemensionAndType(Type *_type)
@@ -555,7 +557,7 @@ void checkIdExists(Node *node, int lineNum)
     string idName = std::get<string>(node->value);
     if (symbolTable.count(idName) == 0)
     {
-        symbolTable[idName] = Type::getPrimitiveType(Node_TYPE::INT);
+        symbolTable[idName] = Type::getPrimitiveType(Node_TYPE::WRONG);
         variableNoDefinition(lineNum, idName);
     }
 }
