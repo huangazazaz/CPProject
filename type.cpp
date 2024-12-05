@@ -22,6 +22,8 @@ getPrimitive(FLOAT);
 
 getPrimitive(BOOLEAN);
 
+getPrimitive(WRONG);
+
 #undef getPrimitive
 
 Type *Type::getPrimitiveType(Node_TYPE type)
@@ -44,9 +46,13 @@ Type *Type::getPrimitiveType(Node_TYPE type)
     {
         return Type::getPrimitiveBOOLEAN();
     }
+    case Node_TYPE::WRONG:
+    {
+        return Type::getPrimitiveWRONG();
+    }
     default:
     {
-        return Type::getPrimitiveINT();
+        return Type::getPrimitiveWRONG();
     }
     }
 }

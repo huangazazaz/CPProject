@@ -19,6 +19,7 @@ enum class Node_TYPE
     INT,
     FLOAT,
     BOOLEAN,
+    WRONG,
     NOTHING
 };
 

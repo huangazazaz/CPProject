@@ -195,48 +195,76 @@ CompList: {$$=new Node("CompList",@$.first_line,Node_TYPE::NOTHING);}
 
 Stmt: Exp SEMI {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
-    | CompSt {$$=new Node("Stmt",@$.first_line);$$->push_back($1);}
-    | RETURN Exp SEMI {$$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3);}
+    | Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("SEMI"));}
+    | CompSt {
+    $$=new Node("Stmt",@$.first_line);$$->push_back($1);}
+    | RETURN Exp SEMI {
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3);}
+    | RETURN Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,new Node("SEMI"));}
     | IF LP Exp RP Comp %prec LOWER_THAN_ELSE {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
-    | IF LP Exp RP Comp ELSE Comp {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5,$6,$7);}
-    | WHILE LP Exp RP Comp {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
-    | FOR LP Def Exp SEMI Exp RP Comp {
-        $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
-    }
-    | FOR LP Def Exp SEMI RP Comp {
-        $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6, $7);
-    }
-    | FOR LP Def SEMI Exp RP Comp {
-        $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6, $7);
-    }
-    | FOR LP Def SEMI RP Comp {
-        $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6);
-    }
-    | FOR LP Def Exp SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); }
-    | FOR error Def Exp SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); }
-    | WHILE error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); }
-    | WHILE LP Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); }
-    | Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
-    | RETURN Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
     | IF LP Exp error Comp  {ierror(@$.first_line, IERROR_TYPE::RP);
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,new Node("RP"),$5);}
     | IF error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
- $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
     | IF LP RP Comp error {ierror(@$.first_line, IERROR_TYPE::EXPIF); 
     Node* n = new Node("Exp",@$.first_line);
     n->push_back(new Node("BOOLEAN"));
     n->type = Type::getPrimitiveBOOLEAN();
-$$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,n,$3,$4);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,n,$3,$4);}
+    | IF LP Exp RP Comp ELSE Comp {
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5,$6,$7);}
     | ELSE Comp error {
     ierror(@$.first_line, IERROR_TYPE::IF);
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
+    | WHILE LP Exp RP Comp {
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
+    | WHILE error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
+    | WHILE LP Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,new Node("RP"),$5);}
+    | FOR LP Def Exp SEMI Exp RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
+    }
+    | FOR LP Def Exp SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, new Node("RP"), $8);}
+    | FOR error Def Exp SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7, $8);}
+    | FOR LP Def Exp SEMI RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    }
+    | FOR LP Def Exp SEMI error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, new Node("RP"), $7);}
+    | FOR error Def Exp SEMI RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7);}
+    | FOR LP Def SEMI Exp RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    }
+    | FOR LP Def SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, new Node("RP"), $7);}
+    | FOR error Def SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7);}
+    | FOR LP Def SEMI RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6);}
+    | FOR LP Def SEMI error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, new Node("RP"), $6);}
+    | FOR error Def SEMI RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6);}
+
 
 /* local definition, DefList is only a recursive structure that holds the def  */
 DefList: {$$=new Node("DefList",@$.first_line,Node_TYPE::NOTHING);}
@@ -415,22 +443,22 @@ Exp: Exp ASSIGN Exp {
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getBoolOperatorType($$,$1,$1);}
     | Exp LT Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp LT error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
-    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getComparisonOperatorType($$,$1,$1);}
     | Exp LE Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp LE error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
-    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getComparisonOperatorType($$,$1,$1);}
     | Exp GT Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp GT error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
-    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getComparisonOperatorType($$,$1,$1);}
     | Exp GE Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp GE error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
-    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getComparisonOperatorType($$,$1,$1);}
     | Exp NE Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp NE error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
-    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getComparisonOperatorType($$,$1,$1);}
     | Exp EQ Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp EQ error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
-    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
+    $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getComparisonOperatorType($$,$1,$1);}
     | Exp MOD Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
     | Exp MOD error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}

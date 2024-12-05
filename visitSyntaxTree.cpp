@@ -1011,13 +1011,18 @@ void getAlrthOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
     if (check1 == Node_TYPE::LINE || check2 == Node_TYPE::LINE)
     {
     }
-    else if (check1 == Node_TYPE::FLOAT || check2 == Node_TYPE::FLOAT)
+    else if (check1 == Node_TYPE::FLOAT && check2 == Node_TYPE::FLOAT)
     {
         expOut->type = Type::getPrimitiveFLOAT();
     }
-    else
+    else if (check1 == Node_TYPE::INT && check2 == Node_TYPE::INT)
     {
         expOut->type = Type::getPrimitiveINT();
+    }
+    else
+    {
+        unmatchingOperator(std::get<int>(expOut->value));
+        expOut->type = Type::getPrimitiveWRONG();
     }
 }
 
