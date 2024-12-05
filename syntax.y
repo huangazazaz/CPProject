@@ -11,7 +11,6 @@
     #define YY_NO_UNPUT
     #include "lex.yy.c"
     void yyerror(const char *s);
-    void lineinfor(void);
     Node* root_node;
 
     unordered_map<string,Type*> symbolTable;
@@ -327,6 +326,11 @@ TernaryStmt:
     //       $$ = new Node("TernaryStmt", @$.first_line);
     //       $$->push_back($1, $2, $3, new Node("COLON"), $5); // 临时使用 $3 补充类型
     //   }
+    | Exp TERN Exp error {
+          ierror(@$.first_line, IERROR_TYPE::EXPTERN);
+          $$ = new Node("TernaryStmt", @$.first_line);
+          $$->push_back($1, $2, $3, new Node("COLON"), $3); // 临时使用 $3 补充类型
+      }
     | Exp TERN error COLON Exp {
           ierror(@$.first_line, IERROR_TYPE::EXPTERN);
           $$ = new Node("TernaryStmt", @$.first_line);
@@ -673,15 +677,9 @@ Exp: Exp ASSIGN Exp {
     ;
 
 %%
+
 void yyerror(const char *s){
     isError=1;
-    if(s[0]  == '0'){}
-    fprintf(PARSER_error_OUTPUT,"Error at Line %d: ",yylloc.first_line-1);
-    fprintf(PARSER_error_OUTPUT, "%s\n", s);
-    //lineinfor();
-}
-
-void lineinfor(void){
-    fprintf(PARSER_error_OUTPUT, "begin at:(%d,%d)\n",yylloc.first_line,yylloc.first_column);
-    fprintf(PARSER_error_OUTPUT, "end at:(%d,%d)\n",yylloc.last_line,yylloc.last_column);
+    if(s[0] == 0){}
+    // printf("Error at Line %d: %s\n",yylloc.first_line-1, s);
 }
