@@ -1121,11 +1121,12 @@ void checkReturnValueFromStmtList(Type *type, Node *stmtList)
 
 void checkReturnValueFromCompStmt(Type *type, Node *compStmt)
 {
-    checkReturnValueFromStmtList(type, compStmt->get_nodes(2));
+    checkReturnValueFromStmtList(type, compStmt->get_nodes(1));
 }
 
 void checkReturnValueFromStmt(Type *type, Node *stmt)
 {
+    stmt = stmt->get_nodes(0);
     if (stmt->get_nodes(0)->name == "RETURN")
     {
         checkTypeMatchType(type, stmt->get_nodes(1)->type, std::get<int>(stmt->value), returnTypeDisMatch);
