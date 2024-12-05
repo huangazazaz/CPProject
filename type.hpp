@@ -48,6 +48,8 @@ public:
 
     static Type *getPrimitiveBOOLEAN();
 
+    static Type *getPrimitiveWRONG();
+
     Type() = default;
 
     Type(string _name, CATEGORY _category, PRIMI _type);

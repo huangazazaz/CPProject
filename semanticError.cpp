@@ -39,11 +39,18 @@ void rvalueLeftSetError(int lineNum)
     printf("Error at Line %d: rvalue appears on the left-hand side of the assignment operator\n", lineNum);
 }
 
+void unmatchingOperator(int lineNum)
+{
+    is_sem_error = 1;
+    printf("Error at Line %d: unmatching type on both sides of the operation\n", lineNum);
+}
+
 void unmatchingOperatorNonNumber(int lineNum)
 {
     is_sem_error = 1;
     printf("Error at Line %d: unmatching operation on non-number variables\n", lineNum);
 }
+
 void unmatchingOperatorNonComparison(int lineNum)
 {
     is_sem_error = 1;

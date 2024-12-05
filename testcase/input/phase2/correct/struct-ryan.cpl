@@ -1,0 +1,33 @@
+// Struct definition
+struct Point {
+    int x;
+    int y;
+};
+
+int main() {
+    struct Point pArray[3];  
+
+    // Initialize array elements
+    pArray[0].x = 1;
+    pArray[0].y = 2;
+
+    pArray[1].x = 3;
+    pArray[1].y = 4;
+
+    pArray[2].x = 5;
+    pArray[2].y = 6;
+
+    // Compute the sum of all x and y coordinates
+    int sumX = pArray[0].x + pArray[1].x + pArray[2].x;  // sumX = 9
+    int sumY = pArray[0].y + pArray[1].y + pArray[2].y;  // sumY = 12
+
+    // Create an array of integers
+    int results[2];
+    results[0] = sumX;  // Store sumX in results[0]
+    results[1] = sumY;  // Store sumY in results[1]
+
+    // Access elements of the results array
+    int totalSum = results[0] + results[1];  // totalSum = 21
+
+    return 0;
+}

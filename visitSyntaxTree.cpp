@@ -8,12 +8,14 @@ static unordered_map<string, Node_TYPE> snt = {
     {string("float"), Node_TYPE::FLOAT},
     {string("char"), Node_TYPE::CHAR},
     {string("bool"), Node_TYPE::BOOLEAN},
+    {string("wrong"), Node_TYPE::BOOLEAN},
 };
 static unordered_map<Node_TYPE, string> tns = {
     {Node_TYPE::INT, string("INT")},
     {Node_TYPE::FLOAT, string("FLOAT")},
     {Node_TYPE::CHAR, string("CHAR")},
     {Node_TYPE::BOOLEAN, string("BOOLEAN")},
+    {Node_TYPE::WRONG, string("WRONG")},
 };
 
 auto getArrayDemensionAndType(Type *_type)
@@ -154,7 +156,7 @@ void defPureTypeVisit(Node *node)
         const auto &PrimitiveType = Type::getPrimitiveType(_type);
         if (decList->get_nodes(0, 0)->nodes.size() == 1)
         {
-             scopeStack.scopes.back()[name] = PrimitiveType;
+            scopeStack.scopes.back()[name] = PrimitiveType;
             // symbolTable[name] = PrimitiveType;
             if (decList->get_nodes(0)->nodes.size() == 3)
             {
@@ -167,7 +169,7 @@ void defPureTypeVisit(Node *node)
         else
         {
             scopeStack.scopes.back()[name] = new Type(name, CATEGORY::ARRAY,
-                                         getArrayFromVarDec(decList->get_nodes(0, 0), PrimitiveType));
+                                                      getArrayFromVarDec(decList->get_nodes(0, 0), PrimitiveType));
             // symbolTable[name] = new Type(name, CATEGORY::ARRAY,
             //                              getArrayFromVarDec(decList->get_nodes(0, 0), PrimitiveType));
             if (decList->get_nodes(0)->nodes.size() == 3)
@@ -202,8 +204,8 @@ void defStructTypeVisit(Node *node)
     Node *decList = node->get_nodes(1);
     string variableName = getStrValueFromDecList(decList);
     string structName = std::get<string>(node->get_nodes(0, 0, 1)->value);
-    
-    if(scopeStack.lookup(structName) == nullptr)
+
+    if (scopeStack.lookup(structName) == nullptr)
     // if (symbolTable.count(structName) == 0)
     {
         structNoDefinition(std::get<int>(node->value), structName);
@@ -214,7 +216,7 @@ void defStructTypeVisit(Node *node)
         do
         {
             // if (symbolTable.count(variableName) != 0)
-            if(scopeStack.lookup(variableName) != nullptr)
+            if (scopeStack.lookup(variableName) != nullptr)
             {
                 // We need to add another scope for struct
                 variableRedefined(std::get<int>(node->value), variableName);
@@ -230,8 +232,8 @@ void defStructTypeVisit(Node *node)
             {
                 // struct Variable with array
                 scopeStack.scopes.back()[variableName] = new Type(variableName, CATEGORY::ARRAY,
-                                                     getArrayFromVarDec(decList->get_nodes(0, 0),
-                                                                         scopeStack.lookup(structName)));
+                                                                  getArrayFromVarDec(decList->get_nodes(0, 0),
+                                                                                     scopeStack.lookup(structName)));
                 // symbolTable[variableName] = new Type(variableName, CATEGORY::ARRAY,
                 //                                      getArrayFromVarDec(decList->get_nodes(0, 0),
                 //                                                         symbolTable[structName]));
@@ -242,8 +244,8 @@ void defStructTypeVisit(Node *node)
                 //                    std::get<int>(decList->value),
                 //                    nonMatchTypeBothSide);
                 checkTypeMatchType(scopeStack.lookup(variableName), decList->get_nodes(0, 2)->type,
-                    std::get<int>(decList->value),
-                    nonMatchTypeBothSide);
+                                   std::get<int>(decList->value),
+                                   nonMatchTypeBothSide);
             }
             if (decList->nodes.size() == 1)
             {
@@ -315,22 +317,22 @@ void extDefVisit_SES_PureType(Node *node)
     do
     {
         // if (symbolTable.count(name) != 0)
-        if(scopeStack.lookup(name) != nullptr)
+        if (scopeStack.lookup(name) != nullptr)
         {
             variableRedefined(std::get<int>(node->value), name);
         }
         const auto &PrimitiveType = Type::getPrimitiveType(_type);
         if (extDecList->get_nodes(0, 0)->nodes.empty())
         {
-            scopeStack.scopes.back()[name] = PrimitiveType; 
+            scopeStack.scopes.back()[name] = PrimitiveType;
             // symbolTable[name] = PrimitiveType;
         }
         else
         {
 
             scopeStack.scopes.back()[name] = new Type(name, CATEGORY::ARRAY,
-                                         getArrayFromVarDec(extDecList->get_nodes(0),
-                                                            PrimitiveType));
+                                                      getArrayFromVarDec(extDecList->get_nodes(0),
+                                                                         PrimitiveType));
             // symbolTable[name] = new Type(name, CATEGORY::ARRAY,
             //                              getArrayFromVarDec(extDecList->get_nodes(0),
             //                                                 PrimitiveType));
@@ -352,7 +354,7 @@ void extDefVisit_SES_StructType(Node *node)
     extDefVisit_SS(node);
 
     // if (symbolTable.count(structName) == 0)
-    if(scopeStack.lookup(structName) == nullptr)
+    if (scopeStack.lookup(structName) == nullptr)
     {
         structNoDefinition(std::get<int>(node->value), structName);
         // but this do not need to print, it use to happen is extDefVisit_SS;
@@ -364,14 +366,14 @@ void extDefVisit_SES_StructType(Node *node)
         do
         {
             // if (symbolTable.count(variableName) != 0)
-            if(scopeStack.lookup(variableName) != 0)
+            if (scopeStack.lookup(variableName) != 0)
             {
                 variableRedefined(std::get<int>(node->value), variableName);
             }
             if (extDecList->get_nodes(0)->nodes.size() == 1)
             {
                 // Struct with variable definition
-                scopeStack.scopes.back()[variableName]= scopeStack.lookup(structName);
+                scopeStack.scopes.back()[variableName] = scopeStack.lookup(structName);
                 // symbolTable[variableName] = symbolTable[structName];
             }
             else
@@ -380,9 +382,9 @@ void extDefVisit_SES_StructType(Node *node)
                 // symbolTable[variableName] = new Type(variableName, CATEGORY::ARRAY,
                 //                                      getArrayFromVarDec(extDecList->get_nodes(0),
                 //                                                         symbolTable[structName]));
-                 scopeStack.scopes.back()[variableName] =  new Type(variableName, CATEGORY::ARRAY,
-                                                     getArrayFromVarDec(extDecList->get_nodes(0),
-                                                                        scopeStack.lookup(structName)));     
+                scopeStack.scopes.back()[variableName] = new Type(variableName, CATEGORY::ARRAY,
+                                                                  getArrayFromVarDec(extDecList->get_nodes(0),
+                                                                                     scopeStack.lookup(structName)));
             }
             if (extDecList->nodes.size() == 1)
             {
@@ -404,7 +406,7 @@ FieldList *getFiledListFromNodesVector(const vector<Node *> &vec)
     for (const auto &item : vec)
     {
         const auto name = getStrValueFromDecList(item);
-        
+
         // fieldVec.push_back(new FieldList{name, symbolTable[name], nullptr});
         fieldVec.push_back(new FieldList{name, scopeStack.scopes.back()[name], nullptr});
 
@@ -451,7 +453,7 @@ void extDefVisit_SS(Node *node)
     getNamesOfDefList(node, namesofFileds);
     auto fieldListOfType = getFiledListFromNodesVector(namesofFileds);
     // if (symbolTable.count(name) != 0)
-    if (scopeStack.lookup(name)!= nullptr)
+    if (scopeStack.lookup(name) != nullptr)
 
     {
         structRedefined(std::get<int>(node->value), name);
@@ -603,7 +605,7 @@ void checkIdExists(Node *node, int lineNum)
     if (scopeStack.lookup(idName) == nullptr)
     {
         scopeStack.scopes.back()[idName] = Type::getPrimitiveType(Node_TYPE::INT);
-        
+
         // symbolTable[idName] = Type::getPrimitiveType(Node_TYPE::INT);
         variableNoDefinition(lineNum, idName);
     }
@@ -615,7 +617,7 @@ void funDecVisit(Node *funDec)
     functionType->category = CATEGORY::FUNCTION;
     functionType->name = std::get<string>(funDec->get_nodes(0)->value);
     // if (symbolTable.count(functionType->name) != 0)
-    scopeStack.enterScope(std::unordered_map<std::string, Type*>());
+    scopeStack.enterScope(std::unordered_map<std::string, Type *>());
     if (scopeStack.lookup(functionType->name) != nullptr)
 
     {
@@ -623,7 +625,6 @@ void funDecVisit(Node *funDec)
         return;
     }
     // std::cout << "Entering scope via funDecVisit" << std::endl;
-
 
     if (funDec->nodes.size() == 3)
     {
@@ -655,7 +656,7 @@ void funDecVisit(Node *funDec)
             {
                 // Struct with variable definition - with Array
                 scopeStack.scopes.back()[paramName] = new Type(paramName, CATEGORY::ARRAY,
-                                                  getArrayFromVarDec(varDec, specifierType));
+                                                               getArrayFromVarDec(varDec, specifierType));
                 // symbolTable[paramName] = new Type(paramName, CATEGORY::ARRAY,
                 //                                   getArrayFromVarDec(varDec, specifierType));
             }
@@ -675,7 +676,7 @@ void funDecVisit(Node *funDec)
             string paramName = getStrValueFromVarDec(varList->get_nodes(0, 1));
             fieldListPtr->name = paramName;
             // fieldListPtr->type = symbolTable[paramName];
-        
+
             fieldListPtr->type = scopeStack.lookup(paramName);
 
             if (varList->nodes.size() == 1)
@@ -687,10 +688,9 @@ void funDecVisit(Node *funDec)
             fieldListPtr = fieldListPtr->next;
         } while (true);
     }
-    
+
     scopeStack.scopes[scopeStack.current_scope_level - 1][functionType->name] = functionType;
 
-        
     // symbolTable[functionType->name] = functionType;
 }
 
@@ -839,8 +839,9 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
             string argsName;
             if (args->get_nodes(0, 0)->value.index() != 0)
             {
-                if (paramType->category != CATEGORY::PRIMITIVE ||
-                    paramType != args->get_nodes(0)->type
+                if ((paramType->category != CATEGORY::PRIMITIVE ||
+                     paramType != args->get_nodes(0)->type) &&
+                    args->get_nodes(0)->type != Type::getPrimitiveWRONG()
                     // std::get<Node_TYPE>(paramType->type) != args->get_nodes(0, 0)->TYPE
                 )
                 {
@@ -853,7 +854,7 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
                 argsName = std::get<string>(args->get_nodes(0, 0)->value);
             }
             // if (symbolTable.count(argsName) == 0)
-             if (scopeStack.lookup(argsName) == nullptr)
+            if (scopeStack.lookup(argsName) == nullptr)
             {
             }
             else
@@ -868,8 +869,11 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
                 }
                 auto errorOfinvalidArgumentType = [lineNum, functionName, paramType, argsType]
                 {
-                    invalidArgumentType(lineNum, functionName, categoryAndTypeNameFromType(paramType),
-                                        categoryAndTypeNameFromType(argsType));
+                    if (argsType != Type::getPrimitiveType(Node_TYPE::WRONG))
+                    {
+                        invalidArgumentType(lineNum, functionName, categoryAndTypeNameFromType(paramType),
+                                            categoryAndTypeNameFromType(argsType));
+                    }
                 };
                 if (paramType == nullptr || argsType == nullptr)
                 {
@@ -1061,6 +1065,11 @@ void getBoolOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
 
 Node_TYPE checkComparisonOperatorType(Node *exp)
 {
+    if (exp->type == Type::getPrimitiveWRONG())
+    {
+        return Node_TYPE::LINE;
+    }
+
     if (exp->type == nullptr)
     {
         unmatchingOperatorNonComparison(std::get<int>(exp->value));
@@ -1077,6 +1086,11 @@ Node_TYPE checkComparisonOperatorType(Node *exp)
 
 Node_TYPE checkAlrthOperatorType(Node *exp)
 {
+    if (exp->type == Type::getPrimitiveWRONG())
+    {
+        return Node_TYPE::LINE;
+    }
+
     if (exp->type == nullptr)
     {
         unmatchingOperatorNonNumber(std::get<int>(exp->value));
@@ -1098,19 +1112,24 @@ void getAlrthOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
     if (check1 == Node_TYPE::LINE || check2 == Node_TYPE::LINE)
     {
     }
-    else if (check1 == Node_TYPE::FLOAT || check2 == Node_TYPE::FLOAT)
+    else if (check1 == Node_TYPE::FLOAT && check2 == Node_TYPE::FLOAT)
     {
         expOut->type = Type::getPrimitiveFLOAT();
     }
-    else
+    else if (check1 == Node_TYPE::INT && check2 == Node_TYPE::INT)
     {
         expOut->type = Type::getPrimitiveINT();
+    }
+    else
+    {
+        unmatchingOperator(std::get<int>(expOut->value));
+        expOut->type = Type::getPrimitiveWRONG();
     }
 }
 
 void checkTypeMatchType(Type *leftType, Type *rightType, int lineNum, const std::function<void(int)> &func)
 {
-    if (leftType == nullptr || rightType == nullptr || leftType == rightType)
+    if (leftType == nullptr || rightType == nullptr || leftType == rightType || leftType == Type::getPrimitiveWRONG() || rightType == Type::getPrimitiveWRONG())
         return;
 
     else if (leftType->category != rightType->category)
@@ -1118,7 +1137,7 @@ void checkTypeMatchType(Type *leftType, Type *rightType, int lineNum, const std:
         func(lineNum);
     }
     else if (leftType->category == CATEGORY::STRUCTURE &&
-            scopeStack.scopes.back()[leftType->name]->name != scopeStack.scopes.back()[rightType->name]->name)
+             scopeStack.scopes.back()[leftType->name]->name != scopeStack.scopes.back()[rightType->name]->name)
     // else if (leftType->category == CATEGORY::STRUCTURE &&
     //         symbolTable[leftType->name]->name != symbolTable[rightType->name]->name)
     {
@@ -1192,11 +1211,12 @@ void checkReturnValueFromStmtList(Type *type, Node *stmtList)
 
 void checkReturnValueFromCompStmt(Type *type, Node *compStmt)
 {
-    checkReturnValueFromStmtList(type, compStmt->get_nodes(2));
+    checkReturnValueFromStmtList(type, compStmt->get_nodes(1));
 }
 
 void checkReturnValueFromStmt(Type *type, Node *stmt)
 {
+    stmt = stmt->get_nodes(0);
     if (stmt->get_nodes(0)->name == "RETURN")
     {
         checkTypeMatchType(type, stmt->get_nodes(1)->type, std::get<int>(stmt->value), returnTypeDisMatch);

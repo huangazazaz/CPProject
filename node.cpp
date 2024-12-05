@@ -47,6 +47,7 @@ void Node::print(int space)
         printf("%s: %d\n", this->name.c_str(), std::get<bool>(this->value));
         break;
     }
+    case Node_TYPE::WRONG:
     case Node_TYPE::NOTHING:
     {
         return;

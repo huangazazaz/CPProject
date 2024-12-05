@@ -19,6 +19,8 @@ void nonMatchTypeBothSide(int lineNum);
 
 void rvalueLeftSetError(int lineNum);
 
+void unmatchingOperator(int lineNum);
+
 void unmatchingOperatorNonComparison(int lineNum);
 
 void unmatchingOperatorNonNumber(int lineNum);

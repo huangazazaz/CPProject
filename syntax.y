@@ -13,7 +13,6 @@
     #define YY_NO_UNPUT
     #include "lex.yy.c"
     void yyerror(const char *s);
-    void lineinfor(void);
     Node* root_node;
 
     unordered_map<string,Type*> symbolTable;
@@ -38,7 +37,7 @@
 %token <Node_value> CHAR
 %token <Node_value> BOOLEAN
 %token <Node_value> ID
-%right <Node_value> ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN
+%right <Node_value> ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN BOR_ASSIGN BAND_ASSIGN XOR_ASSIGN
 %nonassoc <Node_value> TERN COLON
 %left <Node_value> OR
 %left <Node_value> AND
@@ -203,48 +202,76 @@ CompList: {$$=new Node("CompList",@$.first_line,Node_TYPE::NOTHING);}
 
 Stmt: Exp SEMI {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
-    | CompSt {$$=new Node("Stmt",@$.first_line);$$->push_back($1);}
-    | RETURN Exp SEMI {$$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3);}
+    | Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("SEMI"));}
+    | CompSt {
+    $$=new Node("Stmt",@$.first_line);$$->push_back($1);}
+    | RETURN Exp SEMI {
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3);}
+    | RETURN Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,new Node("SEMI"));}
     | IF LP Exp RP Comp %prec LOWER_THAN_ELSE {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
-    | IF LP Exp RP Comp ELSE Comp {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5,$6,$7);}
-    | WHILE LP Exp RP Comp {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
-    | FOR LP Def Exp SEMI Exp RP Comp {
-        $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
-    }
-    | FOR LP Def Exp SEMI RP Comp {
-        $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6, $7);
-    }
-    | FOR LP Def SEMI Exp RP Comp {
-        $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6, $7);
-    }
-    | FOR LP Def SEMI RP Comp {
-        $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6);
-    }
-    | FOR LP Def Exp SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); }
-    | FOR error Def Exp SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); }
-    | WHILE error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); }
-    | WHILE LP Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); }
-    | Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
-    | RETURN Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);}
     | IF LP Exp error Comp  {ierror(@$.first_line, IERROR_TYPE::RP);
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,new Node("RP"),$5);}
     | IF error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
- $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
     | IF LP RP Comp error {ierror(@$.first_line, IERROR_TYPE::EXPIF); 
     Node* n = new Node("Exp",@$.first_line);
     n->push_back(new Node("BOOLEAN"));
     n->type = Type::getPrimitiveBOOLEAN();
-$$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,n,$3,$4);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,n,$3,$4);}
+    | IF LP Exp RP Comp ELSE Comp {
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5,$6,$7);}
     | ELSE Comp error {
     ierror(@$.first_line, IERROR_TYPE::IF);
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
+    | WHILE LP Exp RP Comp {
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
+    | WHILE error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
+    | WHILE LP Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,new Node("RP"),$5);}
+    | FOR LP Def Exp SEMI Exp RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
+    }
+    | FOR LP Def Exp SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, new Node("RP"), $8);}
+    | FOR error Def Exp SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7, $8);}
+    | FOR LP Def Exp SEMI RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    }
+    | FOR LP Def Exp SEMI error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, new Node("RP"), $7);}
+    | FOR error Def Exp SEMI RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7);}
+    | FOR LP Def SEMI Exp RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    }
+    | FOR LP Def SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, new Node("RP"), $7);}
+    | FOR error Def SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7);}
+    | FOR LP Def SEMI RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6);}
+    | FOR LP Def SEMI error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, new Node("RP"), $6);}
+    | FOR error Def SEMI RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6);}
+
 
 /* local definition, DefList is only a recursive structure that holds the def  */
 DefList: {$$=new Node("DefList",@$.first_line,Node_TYPE::NOTHING);}
@@ -308,6 +335,11 @@ TernaryStmt:
     //       $$ = new Node("TernaryStmt", @$.first_line);
     //       $$->push_back($1, $2, $3, new Node("COLON"), $5); // 临时使用 $3 补充类型
     //   }
+    | Exp TERN Exp error {
+          ierror(@$.first_line, IERROR_TYPE::EXPTERN);
+          $$ = new Node("TernaryStmt", @$.first_line);
+          $$->push_back($1, $2, $3, new Node("COLON"), $3); // 临时使用 $3 补充类型
+      }
     | Exp TERN error COLON Exp {
           ierror(@$.first_line, IERROR_TYPE::EXPTERN);
           $$ = new Node("TernaryStmt", @$.first_line);
@@ -412,6 +444,74 @@ Exp: Exp ASSIGN Exp {
     checkRvalueInLeftSide($$);
     }
     | DIV_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
+    | Exp MOD_ASSIGN Exp {
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$3);
+    checkRvalueInLeftSide($$);
+    checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp MOD_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | MOD_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
+    | Exp BOR_ASSIGN Exp {
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$3);
+    checkRvalueInLeftSide($$);
+    checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp BOR_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | BOR_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
+    | Exp BAND_ASSIGN Exp {
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$3);
+    checkRvalueInLeftSide($$);
+    checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp BAND_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | BAND_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
+    | Exp XOR_ASSIGN Exp {
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$3);
+    checkRvalueInLeftSide($$);
+    checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp XOR_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | XOR_ASSIGN Exp error{
     ierror(@$.first_line, IERROR_TYPE::LVALUE);
     $$=new Node("Exp",@$.first_line);
     $$->push_back($2,$1,$2);
@@ -586,15 +686,9 @@ Exp: Exp ASSIGN Exp {
     ;
 
 %%
+
 void yyerror(const char *s){
     isError=1;
-    if(s[0]  == '0'){}
-    fprintf(PARSER_error_OUTPUT,"Error at Line %d: ",yylloc.first_line-1);
-    fprintf(PARSER_error_OUTPUT, "syntax Error: %s\n", s);
-    //lineinfor();
-}
-
-void lineinfor(void){
-    fprintf(PARSER_error_OUTPUT, "begin at:(%d,%d)\n",yylloc.first_line,yylloc.first_column);
-    fprintf(PARSER_error_OUTPUT, "end at:(%d,%d)\n",yylloc.last_line,yylloc.last_column);
+    if(s[0] == 0){}
+    // printf("Error at Line %d: %s\n",yylloc.first_line-1, s);
 }
