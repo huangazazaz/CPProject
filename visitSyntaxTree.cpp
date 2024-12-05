@@ -555,7 +555,7 @@ void checkIdExists(Node *node, int lineNum)
         return;
     }
     string idName = std::get<string>(node->value);
-    if (symbolTable.count(idName) == 0)
+    if (symbolTable.count(idName) == 0 || symbolTable[idName] == Type::getPrimitiveType(Node_TYPE::WRONG))
     {
         symbolTable[idName] = Type::getPrimitiveType(Node_TYPE::WRONG);
         variableNoDefinition(lineNum, idName);
@@ -765,8 +765,9 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
             string argsName;
             if (args->get_nodes(0, 0)->value.index() != 0)
             {
-                if (paramType->category != CATEGORY::PRIMITIVE ||
-                    paramType != args->get_nodes(0)->type
+                if ((paramType->category != CATEGORY::PRIMITIVE ||
+                     paramType != args->get_nodes(0)->type) &&
+                    args->get_nodes(0)->type != Type::getPrimitiveWRONG()
                     // std::get<Node_TYPE>(paramType->type) != args->get_nodes(0, 0)->TYPE
                 )
                 {
@@ -790,8 +791,11 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
                 }
                 auto errorOfinvalidArgumentType = [lineNum, functionName, paramType, argsType]
                 {
-                    invalidArgumentType(lineNum, functionName, categoryAndTypeNameFromType(paramType),
-                                        categoryAndTypeNameFromType(argsType));
+                    if (argsType != Type::getPrimitiveType(Node_TYPE::WRONG))
+                    {
+                        invalidArgumentType(lineNum, functionName, categoryAndTypeNameFromType(paramType),
+                                            categoryAndTypeNameFromType(argsType));
+                    }
                 };
                 if (paramType == nullptr || argsType == nullptr)
                 {
@@ -977,6 +981,11 @@ void getBoolOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
 
 Node_TYPE checkComparisonOperatorType(Node *exp)
 {
+    if (exp->type == Type::getPrimitiveWRONG())
+    {
+        return Node_TYPE::LINE;
+    }
+
     if (exp->type == nullptr)
     {
         unmatchingOperatorNonComparison(std::get<int>(exp->value));
@@ -992,6 +1001,11 @@ Node_TYPE checkComparisonOperatorType(Node *exp)
 }
 Node_TYPE checkAlrthOperatorType(Node *exp)
 {
+    if (exp->type == Type::getPrimitiveWRONG())
+    {
+        return Node_TYPE::LINE;
+    }
+
     if (exp->type == nullptr)
     {
         unmatchingOperatorNonNumber(std::get<int>(exp->value));
@@ -1030,7 +1044,7 @@ void getAlrthOperatorType(Node *expOut, Node *expIn1, Node *expIn2)
 
 void checkTypeMatchType(Type *leftType, Type *rightType, int lineNum, const std::function<void(int)> &func)
 {
-    if (leftType == nullptr || rightType == nullptr || leftType == rightType)
+    if (leftType == nullptr || rightType == nullptr || leftType == rightType || leftType == Type::getPrimitiveWRONG() || rightType == Type::getPrimitiveWRONG())
         return;
 
     else if (leftType->category != rightType->category)
