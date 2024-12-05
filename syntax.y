@@ -35,7 +35,7 @@
 %token <Node_value> CHAR
 %token <Node_value> BOOLEAN
 %token <Node_value> ID
-%right <Node_value> ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN
+%right <Node_value> ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN BOR_ASSIGN BAND_ASSIGN XOR_ASSIGN
 %nonassoc <Node_value> TERN COLON
 %left <Node_value> OR
 %left <Node_value> AND
@@ -431,6 +431,74 @@ Exp: Exp ASSIGN Exp {
     checkRvalueInLeftSide($$);
     }
     | DIV_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
+    | Exp MOD_ASSIGN Exp {
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$3);
+    checkRvalueInLeftSide($$);
+    checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp MOD_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | MOD_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
+    | Exp BOR_ASSIGN Exp {
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$3);
+    checkRvalueInLeftSide($$);
+    checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp BOR_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | BOR_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
+    | Exp BAND_ASSIGN Exp {
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$3);
+    checkRvalueInLeftSide($$);
+    checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp BAND_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | BAND_ASSIGN Exp error{
+    ierror(@$.first_line, IERROR_TYPE::LVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($2,$1,$2);
+    }
+    | Exp XOR_ASSIGN Exp {
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$3);
+    checkRvalueInLeftSide($$);
+    checkTypeMatch($1,$3,@2.first_line);
+    }
+    | Exp XOR_ASSIGN error {
+    ierror(@$.first_line, IERROR_TYPE::RVALUE);
+    $$=new Node("Exp",@$.first_line);
+    $$->push_back($1,$2,$1);
+    checkRvalueInLeftSide($$);
+    }
+    | XOR_ASSIGN Exp error{
     ierror(@$.first_line, IERROR_TYPE::LVALUE);
     $$=new Node("Exp",@$.first_line);
     $$->push_back($2,$1,$2);
