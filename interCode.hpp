@@ -61,7 +61,8 @@ enum class InterCodeType
     WRITE,
     FOR,
     DEC,
-    IF_ELSE
+    IF_ELSE,
+    CONSTANT
 };
 
 class InterCode
@@ -80,9 +81,9 @@ public:
             Operand *result;
             Operand *op1;
             Operand *op2;
-        } bioOp;                // x := y `+,-,*,/` z
+        } bioOp;                // x := y `+,-,*,/,%,|,&,^` z
         Operand *labelElement;  // LABEL,FUNCTION,GOTO
-        Operand *SingleElement; // RETURN,PARAM,ARG,READ,WRITE
+        Operand *SingleElement; // RETURN,PARAM,ARG,READ,WRITE,CONSTANT
         struct
         {
             Operand *pointer;

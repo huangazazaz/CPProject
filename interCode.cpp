@@ -134,6 +134,12 @@ void InterCode::print() const
         this->ifElse.right->print();
         std::cout << " GOTO ";
         this->ifElse.if_label->print();
+        break;
+    }
+    case InterCodeType::CONSTANT:
+    {
+        this->SingleElement->print();
+        break;
     }
     default:
     {

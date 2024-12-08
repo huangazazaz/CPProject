@@ -47,6 +47,20 @@ static const unordered_map<Node *, InterCodeType> BioOpNodes = []
     };
     return init;
 }();
+static const unordered_map<Node *, Node *> CompAssignNodes = []
+{
+    static const unordered_map<Node *, Node *> init{
+        {Node::getSingleNameNodePointer("PLUS_ASSIGN"), Node::getSingleNameNodePointer("PLUS")},
+        {Node::getSingleNameNodePointer("MINUS_ASSIGN"), Node::getSingleNameNodePointer("MINUS")},
+        {Node::getSingleNameNodePointer("MUL_ASSIGN"), Node::getSingleNameNodePointer("MUL")},
+        {Node::getSingleNameNodePointer("DIV_ASSIGN"), Node::getSingleNameNodePointer("DIV")},
+        {Node::getSingleNameNodePointer("MOD_ASSIGN"), Node::getSingleNameNodePointer("MOD")},
+        {Node::getSingleNameNodePointer("BOR_ASSIGN"), Node::getSingleNameNodePointer("BOR")},
+        {Node::getSingleNameNodePointer("BAND_ASSIGN"), Node::getSingleNameNodePointer("BAND")},
+        {Node::getSingleNameNodePointer("XOR_ASSIGN"), Node::getSingleNameNodePointer("XOR")},
+    };
+    return init;
+}();
 
 static string new_temp()
 {
@@ -82,17 +96,13 @@ InterCode *translate_Exp(Node *exp, const string &place)
         if (exp->get_nodes(0)->name == "Exp" && exp->get_nodes(2)->name == "Exp")
         {
             auto *const middleSign = exp->get_nodes(1);
-            if (middleSign == Node::getSingleNameNodePointer("ASSIGN") ||
-                middleSign == Node::getSingleNameNodePointer("PLUS_ASSIGN") ||
-                middleSign == Node::getSingleNameNodePointer("MINUS_ASSIGN") ||
-                middleSign == Node::getSingleNameNodePointer("MUL_ASSIGN") ||
-                middleSign == Node::getSingleNameNodePointer("DIV_ASSIGN") ||
-                middleSign == Node::getSingleNameNodePointer("BAND_ASSIGN") ||
-                middleSign == Node::getSingleNameNodePointer("BOR_ASSIGN") ||
-                middleSign == Node::getSingleNameNodePointer("XOR_ASSIGN") ||
-                middleSign == Node::getSingleNameNodePointer("MOD_ASSIGN"))
+            if (middleSign == Node::getSingleNameNodePointer("ASSIGN"))
             {
                 will_return = translate_Exp_Assign_Exp(exp);
+            }
+            else if (CompAssignNodes.count(middleSign) != 0)
+            {
+                will_return = translate_Exp_Comp_Assign_Exp(exp);
             }
             else if (BioOpNodes.count(middleSign) != 0)
             {
@@ -110,9 +120,11 @@ string getNameFromANode(Node *exp)
 {
     if (exp->interCode != nullptr)
     {
+        if (exp->get_nodes(0)->name == "INT")
+            return std::string("#") + std::to_string(exp->interCode->SingleElement->value);
         return exp->interCode->assign.left->variName;
     }
-    else if (!exp->nodes.empty() && exp->get_nodes(0)->name == "ID")
+    if (!exp->nodes.empty() && exp->get_nodes(0)->name == "ID")
     {
         return std::get<string>(exp->get_nodes(0)->value);
     }
@@ -137,22 +149,32 @@ InterCode *translate_Exp_Bio_Exp(Node *exp)
     return will_return;
 }
 
+InterCode *translate_Exp_Comp_Bio_Exp(Node *exp)
+{
+    auto *const leftNode = exp->get_nodes(0);
+    auto *const bioOp = CompAssignNodes.at(exp->get_nodes(1));
+    auto *const rightNode = exp->get_nodes(2);
+    const auto leftVariName = getNameFromANode(leftNode);
+    const auto rightExpLeftName = getNameFromANode(rightNode);
+    auto *const will_return = new InterCode(BioOpNodes.at(bioOp));
+    auto *const will_return_result = new Operand(OperandType::VARIABLE, new_temp());
+    auto *const will_return_op2 = new Operand(OperandType::VARIABLE, leftVariName);
+    auto *const will_return_op1 = new Operand(OperandType::VARIABLE, rightExpLeftName);
+    will_return->bioOp = {will_return_result, will_return_op2, will_return_op1};
+    exp->interCode = will_return;
+    nodeInterCodeMerge(exp, leftNode, rightNode);
+    exp->intercodes.push_back(will_return);
+    return will_return;
+}
+
 InterCode *translate_Exp_INT(Node *exp)
 {
     auto *const intExp = exp->get_nodes(0);
     int intExpValue = std::get<int>(intExp->value);
-    // static unordered_map<int, InterCode *> store_map;
-    //     if (store_map.count(intExpValue) != 0) {
-    //         return store_map[intExpValue];
-    //     }
-    auto *const leftPlace = new Operand(OperandType::VARIABLE, new_temp());
-    auto *const rightValue = new Operand(OperandType::CONSTANT, intExpValue);
-    auto *const will_return = new InterCode(InterCodeType::ASSIGN);
-    will_return->assign.left = leftPlace;
-    will_return->assign.right = rightValue;
-    // store_map[intExpValue] = will_return;
+    auto *const constValue = new Operand(OperandType::CONSTANT, intExpValue);
+    auto *const will_return = new InterCode(InterCodeType::CONSTANT);
+    will_return->SingleElement = constValue;
     exp->interCode = will_return;
-    exp->intercodes.push_back(will_return);
     return will_return;
 }
 
@@ -213,6 +235,26 @@ InterCode *translate_Exp_Assign_Exp(Node *const exp)
     will_return_rightVari->variName = rightExpLeftName;
     will_return->assign = {will_return_leftVari, will_return_rightVari};
     exp->interCode = will_return;
+    nodeInterCodeMerge(exp, leftNode, rightNode);
+    exp->intercodes.push_back(will_return);
+    return will_return;
+}
+
+InterCode *translate_Exp_Comp_Assign_Exp(Node *const exp)
+{
+    Node *const subnodes[3]{exp->get_nodes(0), exp->get_nodes(1), exp->get_nodes(2)};
+    auto *const leftNode = subnodes[0];
+    auto *const rightNode = subnodes[2];
+    auto leftVariName = std::get<string>(leftNode->get_nodes(0)->value);
+    auto rightExpLeftName = getNameFromANode(rightNode);
+    auto *const assignNode = translate_Exp_Comp_Bio_Exp(exp);
+    auto *const will_return = new InterCode(InterCodeType::ASSIGN);
+    auto *const will_return_leftVari = new Operand(OperandType::VARIABLE);
+    will_return_leftVari->variName = leftVariName;
+    auto *const will_return_rightVari = assignNode->bioOp.result;
+    will_return->assign = {will_return_leftVari, will_return_rightVari};
+    if (!(rightNode->interCode != nullptr && rightNode->interCode->interCodeType == InterCodeType::CALL))
+        exp->interCode = will_return;
     nodeInterCodeMerge(exp, leftNode, rightNode);
     exp->intercodes.push_back(will_return);
     return will_return;

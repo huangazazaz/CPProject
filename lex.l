@@ -86,13 +86,13 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
 "/" {yylval.Node_value = Node::getSingleNameNodePointer("DIV");return DIV;}
 "/=" {yylval.Node_value = Node::getSingleNameNodePointer("DIV_ASSIGN");return DIV_ASSIGN;}
 "%" {yylval.Node_value = Node::getSingleNameNodePointer("MOD");return MOD;}
-"%=" {yylval.Node_value = Node::getSingleNameNodePointer("MOD");return MOD_ASSIGN;}
+"%=" {yylval.Node_value = Node::getSingleNameNodePointer("MOD_ASSIGN");return MOD_ASSIGN;}
 "&" {yylval.Node_value = Node::getSingleNameNodePointer("BAND");return BAND;}
-"&=" {yylval.Node_value = Node::getSingleNameNodePointer("BAND");return BAND_ASSIGN;}
+"&=" {yylval.Node_value = Node::getSingleNameNodePointer("BAND_ASSIGN");return BAND_ASSIGN;}
 "|" {yylval.Node_value = Node::getSingleNameNodePointer("BOR");return BOR;}
-"|=" {yylval.Node_value = Node::getSingleNameNodePointer("BOR");return BOR_ASSIGN;}
+"|=" {yylval.Node_value = Node::getSingleNameNodePointer("BOR_ASSIGN");return BOR_ASSIGN;}
 "^" {yylval.Node_value = Node::getSingleNameNodePointer("XOR");return XOR;}
-"^=" {yylval.Node_value = Node::getSingleNameNodePointer("XOR");return XOR_ASSIGN;}
+"^=" {yylval.Node_value = Node::getSingleNameNodePointer("XOR_ASSIGN");return XOR_ASSIGN;}
 "?" {yylval.Node_value = Node::getSingleNameNodePointer("TERN");return TERN;}
 "!" {yylval.Node_value = Node::getSingleNameNodePointer("NOT");return NOT;}
 "(" {yylval.Node_value = Node::getSingleNameNodePointer("LP");return LP;}
