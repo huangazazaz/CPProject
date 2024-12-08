@@ -297,20 +297,22 @@ InterCode *translate_functionInvoke(Node *stmt)
 // maybe include write
 InterCode *translate_functionWithParamInvoke(Node *stmt)
 {
-    // 传进来的应该是 'exp'
-    static auto getNameFromArgNode = [](Node *node)
+    static auto getNameFromArgNode = [](Node *exp)
     {
-        if (node->get_nodes(0)->interCode != nullptr)
+        if (exp->interCode != nullptr)
         {
-            return node->get_nodes(0)->interCode->assign.left->variName;
+            if (exp->get_nodes(0)->name == "INT")
+                return std::string("#") + std::to_string(exp->interCode->SingleElement->value);
+            return exp->interCode->assign.left->variName;
         }
         else
         {
-            return std::get<string>(node->get_nodes(0, 0)->value);
+            return std::get<string>(exp->get_nodes(0)->value);
         }
     };
     const auto functionName = std::get<string>(stmt->get_nodes(0)->value);
-    const auto paramName = getNameFromArgNode(stmt->get_nodes(2));
+    auto *argExp = stmt->get_nodes(2, 0);
+    const auto paramName = getNameFromArgNode(argExp);
     auto *const will_return = new InterCode();
     if (functionName == "write")
     {
@@ -321,14 +323,12 @@ InterCode *translate_functionWithParamInvoke(Node *stmt)
         stmt->intercodes.push_back(will_return);
         return will_return;
     };
-    auto *argExp = stmt->get_nodes(2);
     vector<InterCode *> tempIntercodes;
     do
     {
         const auto argName = getNameFromArgNode(argExp);
         auto *const arg_InterCode = new InterCode(InterCodeType::ARG);
-        arg_InterCode->SingleElement = new Operand(OperandType::VARIABLE);
-        arg_InterCode->SingleElement->variName = argName;
+        arg_InterCode->SingleElement = new Operand(OperandType::VARIABLE, argName);
         argExp->interCode = arg_InterCode;
         // arg_InterCode->print();
         nodeInterCodeMerge(stmt, argExp->get_nodes(0));
@@ -470,7 +470,7 @@ void translate_while(Node *const stmt)
     insertAJumpLabelToExpNode(stmt, newLabel1);
     nodeInterCodeMerge(stmt, stmt->get_nodes(2));
     insertAJumpLabelToExpNode(stmt, newLabel2);
-    nodeInterCodeMerge(stmt, stmt->get_nodes(4)); // code2
+    nodeInterCodeMerge(stmt, stmt->get_nodes(4, 0)); // code2
     insertAGotoLabelToExpNode(stmt, newLabel1);
     insertAJumpLabelToExpNode(stmt, newLabel3);
 }
