@@ -602,9 +602,9 @@ void checkIdExists(Node *node, int lineNum)
     }
     string idName = std::get<string>(node->value);
     // if (symbolTable.count(idName) == 0)
-    if (scopeStack.lookup(idName) == nullptr)
+    if (scopeStack.lookup(idName) == nullptr || scopeStack.lookup(idName) == Type::getPrimitiveType(Node_TYPE::WRONG))
     {
-        scopeStack.scopes.back()[idName] = Type::getPrimitiveType(Node_TYPE::INT);
+        scopeStack.scopes.back()[idName] = Type::getPrimitiveType(Node_TYPE::WRONG);
 
         // symbolTable[idName] = Type::getPrimitiveType(Node_TYPE::INT);
         variableNoDefinition(lineNum, idName);
@@ -618,12 +618,7 @@ void funDecVisit(Node *funDec)
     functionType->name = std::get<string>(funDec->get_nodes(0)->value);
     // if (symbolTable.count(functionType->name) != 0)
     scopeStack.enterScope(std::unordered_map<std::string, Type *>());
-    if (scopeStack.lookup(functionType->name) != nullptr)
-
-    {
-        functionRedefined(std::get<int>(funDec->value), functionType->name);
-        return;
-    }
+    bool err = scopeStack.lookup(functionType->name) != nullptr;
     // std::cout << "Entering scope via funDecVisit" << std::endl;
 
     if (funDec->nodes.size() == 3)
@@ -690,6 +685,11 @@ void funDecVisit(Node *funDec)
     }
 
     scopeStack.scopes[scopeStack.current_scope_level - 1][functionType->name] = functionType;
+    if (err)
+    {
+        functionRedefined(std::get<int>(funDec->value), functionType->name);
+        return;
+    }
 
     // symbolTable[functionType->name] = functionType;
 }
