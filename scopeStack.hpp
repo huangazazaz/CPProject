@@ -13,6 +13,24 @@ class ScopeStack
 {
 
 public:
+    ScopeStack()
+    {
+        // Initialize the first scope with default function types
+        std::unordered_map<std::string, Type *> initialScope;
+
+        // Create the read function type
+        Type *const readFunctionType = new Type("read", CATEGORY::FUNCTION, static_cast<FieldList *>(nullptr));
+        readFunctionType->returnType = Type::getPrimitiveINT();
+        initialScope.insert(std::make_pair("read", readFunctionType));
+
+        // Create the write function type
+        auto *const writeFunctionParam = new FieldList("readInt", Type::getPrimitiveINT(), nullptr);
+        Type *const writeFunctionType = new Type("write", CATEGORY::FUNCTION, writeFunctionParam);
+        initialScope.insert(std::make_pair("write", writeFunctionType));
+
+        // Add the initial scope to the stack
+        scopes.push_back(initialScope);
+    }
     // Enter a new scope, note we use directly unordered_map
     std::vector<unordered_map<string, Type *>> scopes = {
         std::unordered_map<std::string, Type *>{}};
