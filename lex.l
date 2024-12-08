@@ -59,49 +59,49 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
     yylval.Node_value = new Node("TYPE","bool",Node_TYPE::STRING);
     return TYPE;
 }
-"struct" {yylval.Node_value = new Node("STRUCT");return STRUCT;}
-"if" {yylval.Node_value = new Node("IF");return IF;}
-"else" {yylval.Node_value = new Node("ELSE");return ELSE;}
-"while" {yylval.Node_value = new Node("WHILE");return WHILE;}
-"for" {yylval.Node_value = new Node("FOR");return FOR;}
-"return" {yylval.Node_value = new  Node("RETURN");return RETURN;}
-"." {yylval.Node_value = new  Node("DOT");return DOT;}
-";" {yylval.Node_value = new  Node("SEMI");return SEMI;}
-"," {yylval.Node_value = new  Node("COMMA");return COMMA;}
-"=" {yylval.Node_value = new  Node("ASSIGN");return ASSIGN;}
-"<" {yylval.Node_value = new  Node("LT");return LT;}
-"<=" {yylval.Node_value = new  Node("LE");return LE;}
-">" {yylval.Node_value = new  Node("GT");return GT;}
-">=" {yylval.Node_value = new  Node("GE");return GE;}
-"!=" {yylval.Node_value = new  Node("NE");return NE;}
-"==" {yylval.Node_value = new  Node("EQ");return EQ;}
-"&&" {yylval.Node_value = new  Node("AND");return AND;}
-"||" {yylval.Node_value = new  Node("OR");return OR;}
-"+" {yylval.Node_value = new  Node("PLUS");return PLUS;}
-"+=" {yylval.Node_value = new  Node("PLUS_ASSIGN");return PLUS_ASSIGN;}
-"-" {yylval.Node_value = new  Node("MINUS");return MINUS;}
-"-=" {yylval.Node_value = new  Node("MINUS_ASSIGN");return MINUS_ASSIGN;}
-"*" {yylval.Node_value = new  Node("MUL");return MUL;}
-"*=" {yylval.Node_value = new  Node("MUL_ASSIGN");return MUL_ASSIGN;}
-"/" {yylval.Node_value = new  Node("DIV");return DIV;}
-"/=" {yylval.Node_value = new  Node("DIV_ASSIGN");return DIV_ASSIGN;}
-"%" {yylval.Node_value = new  Node("MOD");return MOD;}
-"%=" {yylval.Node_value = new  Node("MOD");return MOD_ASSIGN;}
-"&" {yylval.Node_value = new  Node("BAND");return BAND;}
-"&=" {yylval.Node_value = new  Node("BAND");return BAND_ASSIGN;}
-"|" {yylval.Node_value = new  Node("BOR");return BOR;}
-"|=" {yylval.Node_value = new  Node("BOR");return BOR_ASSIGN;}
-"^" {yylval.Node_value = new  Node("XOR");return XOR;}
-"^=" {yylval.Node_value = new  Node("XOR");return XOR_ASSIGN;}
-"?" {yylval.Node_value = new  Node("TERN");return TERN;}
-"!" {yylval.Node_value = new  Node("NOT");return NOT;}
-"(" {yylval.Node_value = new  Node("LP");return LP;}
-")" {yylval.Node_value = new  Node("RP");return RP;}
-"[" {yylval.Node_value = new  Node("LB");return LB;}
-"]" {yylval.Node_value = new  Node("RB");return RB;}
-"{" {yylval.Node_value = new  Node("LC");return LC;}
-"}" {yylval.Node_value = new  Node("RC");return RC;}
-":" {yylval.Node_value = new  Node("COLON");return COLON;}
+"struct" {yylval.Node_value = Node::getSingleNameNodePointer("STRUCT");return STRUCT;}
+"if" {yylval.Node_value = Node::getSingleNameNodePointer("IF");return IF;}
+"else" {yylval.Node_value = Node::getSingleNameNodePointer("ELSE");return ELSE;}
+"while" {yylval.Node_value = Node::getSingleNameNodePointer("WHILE");return WHILE;}
+"for" {yylval.Node_value = Node::getSingleNameNodePointer("FOR");return FOR;}
+"return" {yylval.Node_value = Node::getSingleNameNodePointer("RETURN");return RETURN;}
+"." {yylval.Node_value = Node::getSingleNameNodePointer("DOT");return DOT;}
+";" {yylval.Node_value = Node::getSingleNameNodePointer("SEMI");return SEMI;}
+"," {yylval.Node_value = Node::getSingleNameNodePointer("COMMA");return COMMA;}
+"=" {yylval.Node_value = Node::getSingleNameNodePointer("ASSIGN");return ASSIGN;}
+"<" {yylval.Node_value = Node::getSingleNameNodePointer("LT");return LT;}
+"<=" {yylval.Node_value = Node::getSingleNameNodePointer("LE");return LE;}
+">" {yylval.Node_value = Node::getSingleNameNodePointer("GT");return GT;}
+">=" {yylval.Node_value = Node::getSingleNameNodePointer("GE");return GE;}
+"!=" {yylval.Node_value = Node::getSingleNameNodePointer("NE");return NE;}
+"==" {yylval.Node_value = Node::getSingleNameNodePointer("EQ");return EQ;}
+"&&" {yylval.Node_value = Node::getSingleNameNodePointer("AND");return AND;}
+"||" {yylval.Node_value = Node::getSingleNameNodePointer("OR");return OR;}
+"+" {yylval.Node_value = Node::getSingleNameNodePointer("PLUS");return PLUS;}
+"+=" {yylval.Node_value = Node::getSingleNameNodePointer("PLUS_ASSIGN");return PLUS_ASSIGN;}
+"-" {yylval.Node_value = Node::getSingleNameNodePointer("MINUS");return MINUS;}
+"-=" {yylval.Node_value = Node::getSingleNameNodePointer("MINUS_ASSIGN");return MINUS_ASSIGN;}
+"*" {yylval.Node_value = Node::getSingleNameNodePointer("MUL");return MUL;}
+"*=" {yylval.Node_value = Node::getSingleNameNodePointer("MUL_ASSIGN");return MUL_ASSIGN;}
+"/" {yylval.Node_value = Node::getSingleNameNodePointer("DIV");return DIV;}
+"/=" {yylval.Node_value = Node::getSingleNameNodePointer("DIV_ASSIGN");return DIV_ASSIGN;}
+"%" {yylval.Node_value = Node::getSingleNameNodePointer("MOD");return MOD;}
+"%=" {yylval.Node_value = Node::getSingleNameNodePointer("MOD");return MOD_ASSIGN;}
+"&" {yylval.Node_value = Node::getSingleNameNodePointer("BAND");return BAND;}
+"&=" {yylval.Node_value = Node::getSingleNameNodePointer("BAND");return BAND_ASSIGN;}
+"|" {yylval.Node_value = Node::getSingleNameNodePointer("BOR");return BOR;}
+"|=" {yylval.Node_value = Node::getSingleNameNodePointer("BOR");return BOR_ASSIGN;}
+"^" {yylval.Node_value = Node::getSingleNameNodePointer("XOR");return XOR;}
+"^=" {yylval.Node_value = Node::getSingleNameNodePointer("XOR");return XOR_ASSIGN;}
+"?" {yylval.Node_value = Node::getSingleNameNodePointer("TERN");return TERN;}
+"!" {yylval.Node_value = Node::getSingleNameNodePointer("NOT");return NOT;}
+"(" {yylval.Node_value = Node::getSingleNameNodePointer("LP");return LP;}
+")" {yylval.Node_value = Node::getSingleNameNodePointer("RP");return RP;}
+"[" {yylval.Node_value = Node::getSingleNameNodePointer("LB");return LB;}
+"]" {yylval.Node_value = Node::getSingleNameNodePointer("RB");return RB;}
+"{" {yylval.Node_value = Node::getSingleNameNodePointer("LC");return LC;}
+"}" {yylval.Node_value = Node::getSingleNameNodePointer("RC");return RC;}
+":" {yylval.Node_value = Node::getSingleNameNodePointer("COLON");return COLON;}
 "true" {
     yylval.Node_value = new  Node(true);
     return BOOLEAN;

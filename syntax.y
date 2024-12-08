@@ -4,9 +4,8 @@
     #include "type.hpp"
     #include "visitSyntaxTree.hpp"
     #include "semanticError.hpp"
+    #include "translate.hpp"
     #include "scopeStack.hpp"
-
-    
     using std::string;
     using std::unordered_map;
     #define YYDEBUG 1
@@ -14,8 +13,7 @@
     #include "lex.yy.c"
     void yyerror(const char *s);
     Node* root_node;
-
-    unordered_map<string,Type*> symbolTable;
+    vector<Node*> ircodes;
     ScopeStack scopeStack;
     extern int isError;
     #define PARSER_error_OUTPUT stdout
@@ -81,10 +79,12 @@ ExtDef: Specifier ExtDecList SEMI  {
     }
     | Specifier_FunDec_Recv CompSt {
 
-        // printf("Extern def with function \n");
         $$=new Node("ExtDef",@$.first_line);
         $$->push_back($1->nodes[0],$1->nodes[1],$2);
         extDefVisit_SFC($$);
+        translate_functionBodyDefine($$,$1,$2);
+        ircodes.push_back($$);
+        // $$->print_vector_intercode();
         scopeStack.exitScope();
     }
     | Specifier ExtDecList error  {ierror(@$.first_line, IERROR_TYPE::SEMI);
@@ -109,6 +109,7 @@ Specifier_FunDec_Recv:Specifier FunDec{
     $$=new Node("Specifier_FunDec_Recv",@$.first_line);
     $$->push_back($1,$2);
     Specifier_FunDec_Recv_SF($$);
+    translate_enterFunction($$);
 };
 ExtDecList: VarDec {$$=new Node("ExtDecList",@$.first_line);$$->push_back($1);}
     | VarDec COMMA ExtDecList {$$=new Node("ExtDecList",@$.first_line);$$->push_back($1,$2,$3);}
@@ -185,6 +186,7 @@ ParamDec: Specifier VarDec {$$=new Node("ParamDec",@$.first_line); $$->push_back
 CompSt: LC CompList RC {
         $$=new Node("CompSt",@$.first_line); 
         $$->push_back($1,$2,$3); 
+        translate_CompstMerge($$,$2);
     }   
     | LC CompList error {
         ierror(@$.first_line, IERROR_TYPE::RC);
@@ -193,25 +195,33 @@ CompSt: LC CompList RC {
     }   
 ;
 
-Comp: Def {$$=new Node("Comp",@$.first_line); $$->push_back($1);}
-    | Stmt {$$=new Node("Comp",@$.first_line); $$->push_back($1);}
+Comp: Def {$$=new Node("Comp",@$.first_line); $$->push_back($1);
+        $$->intercodes = $1->intercodes;}
+    | Stmt {$$=new Node("Comp",@$.first_line); $$->push_back($1);
+        $$->intercodes = $1->intercodes;}
 
 CompList: {$$=new Node("CompList",@$.first_line,Node_TYPE::NOTHING);}
-    | Comp CompList {$$=new Node("CompList",@$.first_line); $$->push_back($1,$2);}
+    | Comp CompList {$$=new Node("CompList",@$.first_line); $$->push_back($1,$2);
+    translate_StmtlistMerge($$);}
 
 
 Stmt: Exp SEMI {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);
+        translate_StmtMergeExp($$);}
     | Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("SEMI"));}
     | CompSt {
-    $$=new Node("Stmt",@$.first_line);$$->push_back($1);}
+    $$=new Node("Stmt",@$.first_line);$$->push_back($1);
+    
+      $$->intercodes = $1->intercodes;}
     | RETURN Exp SEMI {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3);
+     translate_Return($$);}
     | RETURN Exp error {ierror(@$.first_line, IERROR_TYPE::SEMI);
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,new Node("SEMI"));}
     | IF LP Exp RP Comp %prec LOWER_THAN_ELSE {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);
+    translate_if($$);}
     | IF LP Exp error Comp  {ierror(@$.first_line, IERROR_TYPE::RP);
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,new Node("RP"),$5);}
     | IF error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
@@ -222,12 +232,14 @@ Stmt: Exp SEMI {
     n->type = Type::getPrimitiveBOOLEAN();
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,n,$3,$4);}
     | IF LP Exp RP Comp ELSE Comp {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5,$6,$7);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5,$6,$7);
+    translate_ifelse($$);}
     | ELSE Comp error {
     ierror(@$.first_line, IERROR_TYPE::IF);
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2);}
     | WHILE LP Exp RP Comp {
-    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);}
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4,$5);
+    translate_while($$);}
     | WHILE error Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
     | WHILE LP Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
@@ -275,18 +287,16 @@ Stmt: Exp SEMI {
 
 /* local definition, DefList is only a recursive structure that holds the def  */
 DefList: {$$=new Node("DefList",@$.first_line,Node_TYPE::NOTHING);}
-    | Def DefList {$$=new Node("DefList",@$.first_line); $$->push_back($1,$2);}
-    ;
+    | Def DefList {$$=new Node("DefList",@$.first_line); $$->push_back($1,$2);
+    translate_DeflistMerge($$);
+    };
 
-/*
-// Definition of basic name: int x,y,z;
-// */
 Def: Specifier DecList SEMI {
 
-    // printf("Definition of variable detected\n");
     $$=new Node("Def",@$.first_line);
     $$->push_back($1,$2,$3);
     defVisit($$);
+    $$->intercodes = $2->intercodes;
     }
     | Specifier DecList error {
         ierror(@$.first_line, IERROR_TYPE::SEMI);
@@ -294,31 +304,28 @@ Def: Specifier DecList SEMI {
         $$->push_back($1,$2,new Node("SEMI"));
         defVisit($$);
     };
-    // | %prec LOWER_ERROR DecList SEMI {
-    // ierror(@$.first_line, IERROR_TYPE::SPEC);
-    // printf("error\n");
-    // $$->print();
-    // $2->print();
-    // }
+
     
-DecList: Dec {$$=new Node("DecList",@$.first_line);$$->push_back($1);}
+DecList: Dec {$$=new Node("DecList",@$.first_line);$$->push_back($1);
+    $$->intercodes = $1->intercodes;}
     | Dec COMMA DecList {
-        $$=new Node("DecList",@$.first_line); $$->push_back($1,$2,$3);}
+        $$=new Node("DecList",@$.first_line); $$->push_back($1,$2,$3);
+        translate_DecListMerge($$);
+}
     | Dec DecList error {ierror(@$.first_line, IERROR_TYPE::COMMA);
         $$=new Node("DecList",@$.first_line); $$->push_back($1,new Node("COMMA"),$2);}
 ;
 Dec: VarDec {$$=new Node("Dec",@$.first_line); $$->push_back($1);}
     | VarDec ASSIGN Exp {
     $$=new Node("Dec",@$.first_line); $$->push_back($1,$2,$3);
-    // 声明时初始化
-    }
-    ;
+    translate_varDecAssign($$);
+    };
 /* Expression */
 Args: Exp COMMA Args  {$$=new Node("Args",@$.first_line); $$->push_back($1,$2,$3);}
     | Exp COMMA error  {ierror(@$.first_line, IERROR_TYPE::ARG);
         $$=new Node("Args",@$.first_line); $$->push_back($1);}
-    | Exp {$$=new Node("Args",@$.first_line);$$->push_back($1);}
-    ;
+    | Exp {$$=new Node("Args",@$.first_line);$$->push_back($1);
+    $$->intercodes = $1->intercodes;};
 
 TernaryStmt:
       Exp TERN Exp COLON Exp {
@@ -368,7 +375,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -385,7 +392,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp PLUS_ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -402,7 +409,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp MINUS_ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -419,7 +426,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp MUL_ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -436,7 +443,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp DIV_ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -453,7 +460,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp MOD_ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -470,7 +477,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp BOR_ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -487,7 +494,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp BAND_ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -504,7 +511,7 @@ Exp: Exp ASSIGN Exp {
     $$->push_back($1,$2,$3);
     checkRvalueInLeftSide($$);
     checkTypeMatch($1,$3,@2.first_line);
-    }
+    translate_Exp($$);}
     | Exp XOR_ASSIGN error {
     ierror(@$.first_line, IERROR_TYPE::RVALUE);
     $$=new Node("Exp",@$.first_line);
@@ -540,35 +547,47 @@ Exp: Exp ASSIGN Exp {
     | Exp EQ Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getComparisonOperatorType($$,$1,$3);}
     | Exp EQ error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getComparisonOperatorType($$,$1,$1);}
-    | Exp MOD Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp MOD Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);
+    translate_Exp($$);}
     | Exp MOD error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
-    | Exp PLUS Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp PLUS Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);
+    translate_Exp($$);}
     | Exp PLUS error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
-    | Exp MINUS Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp MINUS Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);
+    translate_Exp($$);}
     | Exp MINUS error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
-    | Exp MUL Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp MUL Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);
+    translate_Exp($$);}
     | Exp MUL error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
-    | Exp DIV Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp DIV Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);
+    translate_Exp($$);}
     | Exp DIV error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
-    | Exp BOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp BOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);
+    translate_Exp($$);}
     | Exp BOR error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
-    | Exp BAND Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp BAND Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);
+    translate_Exp($$);}
     | Exp BAND error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
-    | Exp XOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);}
+    | Exp XOR Exp {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);getAlrthOperatorType($$,$1,$3);
+    translate_Exp($$);}
     | Exp XOR error {ierror(@$.first_line, IERROR_TYPE::EXPOP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$1);getAlrthOperatorType($$,$1,$1);}
-    | LP Exp RP {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);$$->type=$2->type;}
+    | LP Exp RP {$$=new Node("Exp",@$.first_line); $$->push_back($1,$2,$3);$$->type=$2->type;
+        $$->interCode = $2->interCode;
+        $$->intercodes = $2->intercodes;}
     | LP Exp error {ierror(@$.first_line, IERROR_TYPE::RP);
     $$=new Node("Exp",@$.first_line); $$->push_back($1,$2,new Node("RP"));$$->type=$2->type;}
-    | MINUS Exp %prec LOWER_MINUS {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;checkAlrthOperatorType($2);}
-    | PLUS Exp %prec LOWER_PLUS {$$=new Node("Exp",@$.first_line);$$->push_back($2);$$->type=$2->type;checkAlrthOperatorType($2);}
+    | MINUS Exp %prec LOWER_MINUS {$$=new Node("Exp",@$.first_line);$$->push_back($1,$2);$$->type=$2->type;checkAlrthOperatorType($2);
+        translate_minus_exp($$);}
+    | PLUS Exp %prec LOWER_PLUS {$$=new Node("Exp",@$.first_line);$$->push_back($2);$$->type=$2->type;checkAlrthOperatorType($2);
+        translate_plus_exp($$);}
     | NOT Exp {
         $$=new Node("Exp",@$.first_line);
         $$->push_back($1,$2);
@@ -602,18 +621,14 @@ Exp: Exp ASSIGN Exp {
       // If expression is an ID + parantheses, this is a function invoke
       checkInvokeExist($1,@1.first_line);
       checkFunctionParams($1,$3,@3.first_line);
-
-      //append node that resembles the return type of that function   
       $$=new Node("Exp",@$.first_line);
       $$->push_back($1,$2,$3,$4);
       getReturnTypeOfFunction($$,$1);
+      translate_functionWithParamInvoke($$);
       }
     | ID LP Args error {ierror(@$.first_line, IERROR_TYPE::RP);
-      // If expression is an ID + parantheses, this is a function invoke
       checkInvokeExist($1,@1.first_line);
       checkFunctionParams($1,$3,@3.first_line);
-
-      //append node that resembles the return type of that function   
       $$=new Node("Exp",@$.first_line);
       $$->push_back($1,$2,$3,new Node("RP"));
       getReturnTypeOfFunction($$,$1);
@@ -624,6 +639,7 @@ Exp: Exp ASSIGN Exp {
       $$=new Node("Exp",@$.first_line);
       $$->push_back($1,$2,$3);
       getReturnTypeOfFunction($$,$1);
+      translate_functionInvoke($$);
     }
     | ID LP error {ierror(@$.first_line, IERROR_TYPE::RP);
       checkInvokeExist($1,@1.first_line);
@@ -675,6 +691,7 @@ Exp: Exp ASSIGN Exp {
     | INT {
         $$=new Node("Exp",@$.first_line);$$->push_back($1);
         $$->type = Type::getPrimitiveINT();
+        translate_Exp($$);
     }
     | FLOAT {
         $$=new Node("Exp",@$.first_line);$$->push_back($1);

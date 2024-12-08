@@ -31,8 +31,14 @@ CPP = $(GPP) $(CXX_FLAGS)
 .visit: .prepare
 	$(CPP) -c visitSyntaxTree.cpp -o visitSyntaxTree.o
 	@ar -rc libvisitSyntaxTree.a visitSyntaxTree.o
-splc: .node .ierror .type .semanticError .visit
+.interCode: .prepare
+	$(CPP) -c interCode.cpp -o interCode.o
+	@ar -rc libinterCode.a interCode.o
+.translate: .prepare
+	$(CPP) -c translate.cpp -o translate.o
+	@ar -rc libtranslate.a translate.o
+splc: .node .ierror .type .semanticError .visit .interCode .translate
 	$(CPP) main.cpp -static -L. -lnode -lierror  \
-    -lvisitSyntaxTree -lsemanticError -ltype  -o splc
+    -lvisitSyntaxTree -lsemanticError -ltype -linterCode -ltranslate -o splc
 clean:
 	@rm -rf $(MAKE_PATH)/ lex.yy.c syntax.tab.* *.out *.o *.a *.so syntax.output splc

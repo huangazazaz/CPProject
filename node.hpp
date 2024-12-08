@@ -1,6 +1,7 @@
 
 #ifndef NODE_HPP
 #define NODE_HPP
+#include "interCode.hpp"
 #include <functional>
 #include <iostream>
 #include <string>
@@ -33,7 +34,9 @@ public:
     int nodes_num = 0;
     Node_inside_type value;
     std::vector<Node *> nodes;
+    InterCode *interCode = nullptr;
     Type *type = nullptr;
+    std::vector<InterCode *> intercodes;
 
     // void (*print)(int, Node *);
     Node();
@@ -51,6 +54,8 @@ public:
     explicit Node(char value);
 
     explicit Node(bool value);
+
+    static Node *getSingleNameNodePointer(const string &nam);
 
     Node(string nam, Node_TYPE type);
 
@@ -84,12 +89,13 @@ public:
     }
 
     template <typename T = size_t, typename... Args>
-
     // order could mean the depth of the current node
     Node *&get_nodes(size_t order, Args... rest)
     {
         return this->nodes[order]->get_nodes(rest...);
     }
+
+    void print_vector_intercode() const;
 
 private:
     static void print_n_space(int space);

@@ -1,7 +1,6 @@
 
 #include "node.hpp"
 #include "type.hpp"
-#include <utility>
 
 void Node::print(int space)
 {
@@ -55,6 +54,16 @@ void Node::print(int space)
     }
 }
 
+Node *Node::getSingleNameNodePointer(const string &nam)
+{
+    static std::unordered_map<string, Node *> staticMapofNodes;
+    if (staticMapofNodes.count(nam) == 0)
+    {
+        staticMapofNodes[nam] = new Node(nam);
+    }
+    return staticMapofNodes[nam];
+}
+
 Node::Node() : Node("No Name", Node_TYPE::NAME, 0, "") {};
 
 Node::Node(const char *const nam) : Node(string(nam)) {}
@@ -97,4 +106,10 @@ void Node::print_line(int space)
     {
         iter->print(space + 2);
     }
+}
+
+void Node::print_vector_intercode() const
+{
+    std::for_each(this->intercodes.cbegin(), this->intercodes.cend(), [](InterCode *intercode)
+                  { intercode->print(); });
 }

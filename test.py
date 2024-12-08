@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+phase = '2'
+
 def process_files(input_base_folder):
     # 构建output文件夹的根目录
     output_base_folder = "testcase/output"
@@ -24,7 +26,7 @@ def process_files(input_base_folder):
                 
                 # 执行命令并将输出写入文件
                 with open(output_file, "w") as out_file:
-                    subprocess.run(["./splc", input_file], stdout=out_file, stderr=out_file)
+                    subprocess.run(["./splc", input_file, phase], stdout=out_file, stderr=out_file)
     
     print("所有文件已处理，输出已保存到 'output' 文件夹中。\n")
 
