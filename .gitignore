@@ -9,3 +9,4 @@ syntax.tab.*
 *.ir
 syntax.output
 splc
+*.log

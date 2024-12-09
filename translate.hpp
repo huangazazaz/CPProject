@@ -66,6 +66,10 @@ InterCode *translate_relop(Node *exp, string label_true, string label_false);
 
 InterCode *translate_exp_or_exp(Node *exp, const string &label_true, const string &label_false);
 
+InterCode *translate_exp_and_exp(Node *exp, const string &label_true, const string &label_false);
+
+InterCode *translate_not_exp(Node *exp, const string &label_true, const string &label_false);
+
 InterCode *translate_varDecAssign(Node *dec);
 
 void translate_DecListMerge(Node *decList);

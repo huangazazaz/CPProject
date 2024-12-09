@@ -434,7 +434,7 @@ void translate_if(Node *const stmt)
     translate_Cond(stmt->get_nodes(2), newLabel1, newLabel2);
     nodeInterCodeMerge(stmt, stmt->get_nodes(2));
     insertAJumpLabelToExpNode(stmt, newLabel1);
-    nodeInterCodeMerge(stmt, stmt->get_nodes(4, 0)); // code2
+    nodeInterCodeMerge(stmt, stmt->get_nodes(4)); // code2
     insertAJumpLabelToExpNode(stmt, newLabel2);
 }
 
@@ -452,13 +452,26 @@ static const unordered_map<Node *, string> relopNameMap = []
 
 void translate_Cond(Node *const stmt, string label_true, const string &label_false)
 {
-    if (relopNameMap.count(stmt->get_nodes(1)) != 0)
+    if (stmt->get_nodes(0) == Node::getSingleNameNodePointer("LP"))
+    {
+        translate_Cond(stmt->get_nodes(1), label_true, label_false);
+        nodeInterCodeMerge(stmt, stmt->get_nodes(1));
+    }
+    else if (relopNameMap.count(stmt->get_nodes(1)) != 0)
     {
         translate_relop(stmt, std::move(label_true), label_false);
     }
     else if (stmt->get_nodes(1) == Node::getSingleNameNodePointer("OR"))
     {
         translate_exp_or_exp(stmt, label_true, label_false);
+    }
+    else if (stmt->get_nodes(1) == Node::getSingleNameNodePointer("AND"))
+    {
+        translate_exp_and_exp(stmt, label_true, label_false);
+    }
+    else if (stmt->get_nodes(0) == Node::getSingleNameNodePointer("NOT"))
+    {
+        translate_not_exp(stmt, label_true, label_false);
     }
 }
 
@@ -640,6 +653,30 @@ InterCode *translate_exp_or_exp(Node *const exp, const string &label_true, const
     }
     translate_Cond(expSubs[2], label_true, label_false);
     nodeInterCodeMerge(exp, expSubs[2]);
+    return nullptr;
+}
+
+InterCode *translate_exp_and_exp(Node *const exp, const string &label_true, const string &label_false)
+{
+    const std::array<Node *, 3> expSubs{exp->get_nodes(0), exp->get_nodes(1), exp->get_nodes(2)};
+    const auto newLabel = new_label();
+    translate_Cond(expSubs[0], newLabel, label_false);
+    nodeInterCodeMerge(exp, expSubs[0]);
+    {
+        auto *const label1InterCode = new InterCode(InterCodeType::LABEL);
+        label1InterCode->labelElement = new Operand(OperandType::JUMP_LABEL);
+        label1InterCode->labelElement->jumpLabel = newLabel;
+        exp->intercodes.push_back(label1InterCode);
+    }
+    translate_Cond(expSubs[2], label_true, label_false);
+    nodeInterCodeMerge(exp, expSubs[2]);
+    return nullptr;
+}
+
+InterCode *translate_not_exp(Node *const exp, const string &label_true, const string &label_false)
+{
+    translate_Cond(exp->get_nodes(1), label_false, label_true);
+    nodeInterCodeMerge(exp, exp->get_nodes(1));
     return nullptr;
 }
 

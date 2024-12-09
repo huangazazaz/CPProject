@@ -1,1 +1,2 @@
-Error at Line 18: redefine variable: count
+terminate called after throwing an instance of 'std::bad_variant_access'
+  what():  std::get: wrong index for variant
