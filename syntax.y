@@ -38,7 +38,7 @@
 %token <Node_value> BOOLEAN
 %token <Node_value> ID
 %right <Node_value> ASSIGN PLUS_ASSIGN MINUS_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN BOR_ASSIGN BAND_ASSIGN XOR_ASSIGN
-%nonassoc <Node_value> TERN COLON
+%right <Node_value> TERN COLON
 %left <Node_value> OR
 %left <Node_value> AND
 %left <Node_value> BOR
