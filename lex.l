@@ -34,6 +34,7 @@ CHAR_16 '\\x(0|[1-9a-fA-F]{digit_16})'
 CHAR_16_more0 '\\x00{digit_16}*'
 CHAR_16_illgeal_char '\\x{digit_16}*([^0-9a-fA-F])+{digit_16}*'
 CHAR_16_toolong '\\x{digit_16}{3,}'
+STRING '{letters}{2,}'|\"{letters}{2,}\"
 %%
 "//" {
     char c = yyinput();
@@ -165,6 +166,12 @@ CHAR_16_toolong '\\x{digit_16}{3,}'
     return CHAR;
 }
 {CHAR_16_toolong} {
+    isError=1;
+    fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
+    yylval.Node_value = new Node('0');
+    return CHAR;
+}
+{STRING} {
     isError=1;
     fprintf(LEXER_ERROR_OUTPUT,"Error at Line %d: unknown lexeme %s\n",yylineno, yytext);
     yylval.Node_value = new Node('0');
