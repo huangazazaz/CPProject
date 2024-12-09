@@ -30,19 +30,19 @@ void functionRedefined(int lineNum, const std::string &name)
 void nonMatchTypeBothSide(int lineNum)
 {
     is_sem_error = 1;
-    printf("Error at Line %d: unmatching types appear at both sides of the assignment operator\n", lineNum);
+    printf("Error at Line %d: unmatching type on both sides of assignment\n", lineNum);
 }
 
 void rvalueLeftSetError(int lineNum)
 {
     is_sem_error = 1;
-    printf("Error at Line %d: rvalue appears on the left-hand side of the assignment operator\n", lineNum);
+    printf("Error at Line %d: rvalue appears on the left-side of assignment\n", lineNum);
 }
 
 void unmatchingOperator(int lineNum)
 {
     is_sem_error = 1;
-    printf("Error at Line %d: unmatching type on both sides of the operation\n", lineNum);
+    printf("Error at Line %d: unmatching operands\n", lineNum);
 }
 
 void unmatchingOperatorNonNumber(int lineNum)

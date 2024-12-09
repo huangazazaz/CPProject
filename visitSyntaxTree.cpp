@@ -735,6 +735,7 @@ void searchAndPutTypeOfDot(Node *expOut, Node *expIn, Node *ID)
         }
         fieldList = fieldList->next;
     }
+    expOut->type = Type::getPrimitiveWRONG();
     noSuchMember(std::get<int>(expOut->value), idName);
 }
 
