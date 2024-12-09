@@ -23,10 +23,13 @@ def process_files(input_base_folder):
                 
                 # 输出文件路径
                 output_file = os.path.join(output_folder, filename.replace(".spl", ".out"))
+                inter_file = os.path.join(output_folder, filename.replace(".spl", ".ir"))
                 
                 # 执行命令并将输出写入文件
                 with open(output_file, "w") as out_file:
-                    subprocess.run(["./splc", input_file, phase], stdout=out_file, stderr=out_file)
+                    subprocess.run(["./splc", input_file, '2'], stdout=out_file, stderr=out_file)
+                with open(inter_file, "w") as out_file:
+                    subprocess.run(["./splc", input_file, '3'], stdout=out_file, stderr=out_file)
     
     print("所有文件已处理，输出已保存到 'output' 文件夹中。\n")
 

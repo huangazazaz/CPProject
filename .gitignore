@@ -6,5 +6,6 @@ syntax.tab.*
 *.o
 *.a
 *.so
+*.ir
 syntax.output
 splc
