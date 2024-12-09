@@ -351,6 +351,7 @@ void extDefVisit_SES_StructType(Node *node)
     string structName = std::get<string>(node->get_nodes(0, 0, 1)->value);
     Node *extDecList = node->get_nodes(1);
     string variableName = getStrValueFromExtDecList(extDecList);
+
     extDefVisit_SS(node);
 
     // if (symbolTable.count(structName) == 0)
@@ -838,7 +839,7 @@ void checkFunctionParams(Node *ID, Node *args, int lineNum)
             string argsName;
             if (args->get_nodes(0, 0)->value.index() != 0)
             {
-                if ((paramType->category != CATEGORY::PRIMITIVE ||
+                if (((paramType->category != CATEGORY::PRIMITIVE && paramType->category != CATEGORY::STRUCTURE) ||
                      paramType != args->get_nodes(0)->type) &&
                     args->get_nodes(0)->type != Type::getPrimitiveWRONG()
                     // std::get<Node_TYPE>(paramType->type) != args->get_nodes(0, 0)->TYPE
@@ -1244,8 +1245,9 @@ void checkReturnValueFromStmt(Type *type, Node *stmt)
     }
     else if (stmt->get_nodes(0)->name == "WHILE")
     {
-        if (stmt->get_nodes(0)->nodes.size() == 5)
+        if (stmt->nodes.size() == 5)
             checkReturnValueFromStmt(type, stmt->get_nodes(4));
-        checkReturnValueFromStmt(type, stmt->get_nodes(3));
+        else
+            checkReturnValueFromStmt(type, stmt->get_nodes(3));
     }
 }
