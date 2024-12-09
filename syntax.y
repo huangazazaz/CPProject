@@ -243,6 +243,13 @@ Stmt: Exp SEMI {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
     | WHILE LP Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,new Node("RP"),$5);}
+    | WHILE LP RP Comp {
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,$4);
+    translate_while_empty($$);}
+    | WHILE error RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4);}
+    | WHILE LP error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+    $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,new Node("RP"),$4);}
     // for 111
     | FOR LP Def Exp SEMI Exp RP Comp {
         $$ = new Node("Stmt", @$.first_line);

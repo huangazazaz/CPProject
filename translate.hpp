@@ -40,6 +40,8 @@ void translate_if(Node *stmt);
 
 void translate_while(Node *stmt);
 
+void translate_while_empty(Node *stmt);
+
 void translate_for000(Node *stmt);
 
 void translate_for001(Node *stmt);
