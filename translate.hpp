@@ -38,7 +38,24 @@ void translate_if(Node *stmt);
 
 void translate_while(Node *stmt);
 
+void translate_for000(Node *stmt);
+
+void translate_for001(Node *stmt);
+
+void translate_for010(Node *stmt);
+
+void translate_for011(Node *stmt);
+
+void translate_for100(Node *stmt);
+
+void translate_for101(Node *stmt);
+
+void translate_for110(Node *stmt);
+
+void translate_for111(Node *stmt);
+
 InterCode *translate_minus_exp(Node *exp);
+
 InterCode *translate_plus_exp(Node *exp);
 
 InterCode *translate_relop(Node *exp, string label_true, string label_false);
@@ -48,6 +65,7 @@ InterCode *translate_exp_or_exp(Node *exp, const string &label_true, const strin
 InterCode *translate_varDecAssign(Node *dec);
 
 void translate_DecListMerge(Node *decList);
+
 InterCode *translate_Exp_RightElement(Node *exp, const string &place = "");
 
 InterCode *translate_Exp_INT(Node *intExp);

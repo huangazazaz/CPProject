@@ -212,7 +212,6 @@ Stmt: Exp SEMI {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("SEMI"));}
     | CompSt {
     $$=new Node("Stmt",@$.first_line);$$->push_back($1);
-    
       $$->intercodes = $1->intercodes;}
     | RETURN Exp SEMI {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3);
@@ -244,45 +243,95 @@ Stmt: Exp SEMI {
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,new Node("LP"),$3,$4,$5);}
     | WHILE LP Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
     $$=new Node("Stmt",@$.first_line); $$->push_back($1,$2,$3,new Node("RP"),$5);}
+    // for 111
     | FOR LP Def Exp SEMI Exp RP Comp {
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
-    }
+    translate_for111($$);}
     | FOR LP Def Exp SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, $6, new Node("RP"), $8);}
     | FOR error Def Exp SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7, $8);}
+    // for 110
     | FOR LP Def Exp SEMI RP Comp {
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, $6, $7);
-    }
+    translate_for110($$);}
     | FOR LP Def Exp SEMI error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, new Node("RP"), $7);}
     | FOR error Def Exp SEMI RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7);}
+    // for 101
     | FOR LP Def SEMI Exp RP Comp {
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, $6, $7);
-    }
+    translate_for101($$);}
     | FOR LP Def SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, $5, new Node("RP"), $7);}
     | FOR error Def SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7);}
+    // for 100
     | FOR LP Def SEMI RP Comp {
         $$ = new Node("Stmt", @$.first_line);
-        $$->push_back($1, $2, $3, $4, $5, $6);}
+        $$->push_back($1, $2, $3, $4, $5, $6);
+    translate_for100($$);}
     | FOR LP Def SEMI error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, $2, $3, $4, new Node("RP"), $6);}
     | FOR error Def SEMI RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
         $$ = new Node("Stmt", @$.first_line);
         $$->push_back($1, new Node("LP"), $3, $4, $5, $6);}
+    // for 011
+    | FOR LP SEMI Exp SEMI Exp RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7, $8);
+    translate_for011($$);}
+    | FOR LP SEMI Exp SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, new Node("RP"), $8);}
+    | FOR error SEMI Exp SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7, $8);}
+    // for 010
+    | FOR LP SEMI Exp SEMI RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    translate_for010($$);}
+    | FOR LP SEMI Exp SEMI error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, new Node("RP"), $7);}
+    | FOR error SEMI Exp SEMI RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7);}
+    // for 001
+    | FOR LP SEMI SEMI Exp RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6, $7);
+    translate_for001($$);}
+    | FOR LP SEMI SEMI Exp error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, new Node("RP"), $7);}
+    | FOR error SEMI SEMI Exp RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6, $7);}
+    // for 000 
+    | FOR LP SEMI SEMI RP Comp {
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, $5, $6);
+    translate_for000($$);}
+    | FOR LP SEMI SEMI error Comp {ierror(@$.first_line, IERROR_TYPE::RP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, $2, $3, $4, new Node("RP"), $6);}
+    | FOR error SEMI SEMI RP Comp {ierror(@$.first_line, IERROR_TYPE::LP); 
+        $$ = new Node("Stmt", @$.first_line);
+        $$->push_back($1, new Node("LP"), $3, $4, $5, $6);}
+
 
 
 /* local definition, DefList is only a recursive structure that holds the def  */

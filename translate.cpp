@@ -454,10 +454,10 @@ void translate_ifelse(Node *const stmt)
     translate_Cond(stmt->get_nodes(2), newLabel1, newLabel2);
     nodeInterCodeMerge(stmt, stmt->get_nodes(2));
     insertAJumpLabelToExpNode(stmt, newLabel1);
-    nodeInterCodeMerge(stmt, stmt->get_nodes(4, 0)); // code2
+    nodeInterCodeMerge(stmt, stmt->get_nodes(4)); // code2
     insertAGotoLabelToExpNode(stmt, newLabel3);
     insertAJumpLabelToExpNode(stmt, newLabel2);
-    nodeInterCodeMerge(stmt, stmt->get_nodes(6, 0));
+    nodeInterCodeMerge(stmt, stmt->get_nodes(6));
     insertAJumpLabelToExpNode(stmt, newLabel3);
 }
 
@@ -470,7 +470,103 @@ void translate_while(Node *const stmt)
     insertAJumpLabelToExpNode(stmt, newLabel1);
     nodeInterCodeMerge(stmt, stmt->get_nodes(2));
     insertAJumpLabelToExpNode(stmt, newLabel2);
-    nodeInterCodeMerge(stmt, stmt->get_nodes(4, 0)); // code2
+    nodeInterCodeMerge(stmt, stmt->get_nodes(4));
+    insertAGotoLabelToExpNode(stmt, newLabel1);
+    insertAJumpLabelToExpNode(stmt, newLabel3);
+}
+
+void translate_for000(Node *const stmt)
+{
+    const auto newLabel1 = new_label();
+    insertAJumpLabelToExpNode(stmt, newLabel1);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(5));
+    insertAGotoLabelToExpNode(stmt, newLabel1);
+}
+
+void translate_for001(Node *const stmt)
+{
+    const auto newLabel1 = new_label();
+    insertAJumpLabelToExpNode(stmt, newLabel1);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(6));
+    nodeInterCodeMerge(stmt, stmt->get_nodes(4));
+    insertAGotoLabelToExpNode(stmt, newLabel1);
+}
+
+void translate_for010(Node *const stmt)
+{
+    const auto newLabel1 = new_label();
+    const auto newLabel2 = new_label();
+    const auto newLabel3 = new_label();
+    translate_Cond(stmt->get_nodes(3), newLabel2, newLabel3);
+    insertAJumpLabelToExpNode(stmt, newLabel1);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(3));
+    insertAJumpLabelToExpNode(stmt, newLabel2);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(7));
+    insertAGotoLabelToExpNode(stmt, newLabel1);
+    insertAJumpLabelToExpNode(stmt, newLabel3);
+}
+
+void translate_for011(Node *const stmt)
+{
+    const auto newLabel1 = new_label();
+    const auto newLabel2 = new_label();
+    const auto newLabel3 = new_label();
+    translate_Cond(stmt->get_nodes(3), newLabel2, newLabel3);
+    insertAJumpLabelToExpNode(stmt, newLabel1);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(3));
+    insertAJumpLabelToExpNode(stmt, newLabel2);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(7));
+    nodeInterCodeMerge(stmt, stmt->get_nodes(5));
+    insertAGotoLabelToExpNode(stmt, newLabel1);
+    insertAJumpLabelToExpNode(stmt, newLabel3);
+}
+
+void translate_for100(Node *const stmt)
+{
+    const auto newLabel1 = new_label();
+    nodeInterCodeMerge(stmt, stmt->get_nodes(2));
+    insertAJumpLabelToExpNode(stmt, newLabel1);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(5));
+    insertAGotoLabelToExpNode(stmt, newLabel1);
+}
+
+void translate_for101(Node *const stmt)
+{
+    const auto newLabel1 = new_label();
+    nodeInterCodeMerge(stmt, stmt->get_nodes(2));
+    insertAJumpLabelToExpNode(stmt, newLabel1);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(6));
+    nodeInterCodeMerge(stmt, stmt->get_nodes(4));
+    insertAGotoLabelToExpNode(stmt, newLabel1);
+}
+
+void translate_for110(Node *const stmt)
+{
+    const auto newLabel1 = new_label();
+    const auto newLabel2 = new_label();
+    const auto newLabel3 = new_label();
+    translate_Cond(stmt->get_nodes(3), newLabel2, newLabel3);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(2));
+    insertAJumpLabelToExpNode(stmt, newLabel1);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(3));
+    insertAJumpLabelToExpNode(stmt, newLabel2);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(7));
+    insertAGotoLabelToExpNode(stmt, newLabel1);
+    insertAJumpLabelToExpNode(stmt, newLabel3);
+}
+
+void translate_for111(Node *const stmt)
+{
+    const auto newLabel1 = new_label();
+    const auto newLabel2 = new_label();
+    const auto newLabel3 = new_label();
+    translate_Cond(stmt->get_nodes(3), newLabel2, newLabel3);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(2));
+    insertAJumpLabelToExpNode(stmt, newLabel1);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(3));
+    insertAJumpLabelToExpNode(stmt, newLabel2);
+    nodeInterCodeMerge(stmt, stmt->get_nodes(7));
+    nodeInterCodeMerge(stmt, stmt->get_nodes(5));
     insertAGotoLabelToExpNode(stmt, newLabel1);
     insertAJumpLabelToExpNode(stmt, newLabel3);
 }
