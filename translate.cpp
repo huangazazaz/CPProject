@@ -131,6 +131,33 @@ string getNameFromANode(Node *exp)
     return "";
 }
 
+InterCode *translate_Ternary(Node *exp)
+{
+    const auto newLabel1 = new_label();
+    const auto newLabel2 = new_label();
+    auto *const leftNode = exp->get_nodes(2);
+    auto *const rightNode = exp->get_nodes(4);
+    const auto leftExpName = getNameFromANode(leftNode);
+    const auto rightExpName = getNameFromANode(rightNode);
+    auto *const will_return = new InterCode(InterCodeType::TERNARY);
+    auto *const will_return_result = new Operand(OperandType::VARIABLE, new_temp());
+    will_return->SingleElement = will_return_result;
+    auto *const exp_value_left = new Operand(OperandType::VARIABLE, leftExpName);
+    auto *const exp_value_right = new Operand(OperandType::VARIABLE, rightExpName);
+    auto *const assign_left = new InterCode(InterCodeType::ASSIGN);
+    auto *const assign_right = new InterCode(InterCodeType::ASSIGN);
+    assign_left->assign = {will_return_result, exp_value_left};
+    assign_right->assign = {will_return_result, exp_value_right};
+    translate_Cond(exp->get_nodes(0), newLabel1, newLabel2);
+    nodeInterCodeMerge(exp, exp->get_nodes(0));
+    insertAJumpLabelToExpNode(exp, newLabel1);
+    exp->intercodes.push_back(assign_left);
+    insertAJumpLabelToExpNode(exp, newLabel2);
+    exp->intercodes.push_back(assign_right);
+    exp->interCode = will_return;
+    return nullptr;
+}
+
 InterCode *translate_Exp_Bio_Exp(Node *exp)
 {
     auto *const leftNode = exp->get_nodes(0);
@@ -216,25 +243,14 @@ InterCode *translate_Exp_Assign_Exp(Node *const exp)
         exp->intercodes.push_back(will_return);
         return will_return;
     }
-    else if (rightNode->interCode != nullptr && rightNode->interCode->interCodeType == InterCodeType::CALL)
-    {
-        auto *will_return = new InterCode(InterCodeType::ASSIGN);
-        auto *const will_return_leftVari = new Operand(OperandType::VARIABLE);
-        will_return_leftVari->variName = leftVariName;
-        auto *const will_return_rightVari = new Operand(OperandType::VARIABLE);
-        will_return_rightVari->variName = rightExpLeftName;
-        will_return->assign = {will_return_leftVari, will_return_rightVari};
-        nodeInterCodeMerge(exp, leftNode, rightNode);
-        exp->intercodes.push_back(will_return);
-        return will_return;
-    }
     auto *const will_return = new InterCode(InterCodeType::ASSIGN);
     auto *const will_return_leftVari = new Operand(OperandType::VARIABLE);
     will_return_leftVari->variName = leftVariName;
     auto *const will_return_rightVari = new Operand(OperandType::VARIABLE);
     will_return_rightVari->variName = rightExpLeftName;
     will_return->assign = {will_return_leftVari, will_return_rightVari};
-    exp->interCode = will_return;
+    if (!(rightNode->interCode != nullptr && rightNode->interCode->interCodeType == InterCodeType::CALL))
+        exp->interCode = will_return;
     nodeInterCodeMerge(exp, leftNode, rightNode);
     exp->intercodes.push_back(will_return);
     return will_return;

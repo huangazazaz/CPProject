@@ -14,6 +14,8 @@ extern unordered_map<string, Type *> symbolTable;
 
 InterCode *translate_Exp(Node *exp, const string &place = "");
 
+InterCode *translate_Ternary(Node *exp);
+
 InterCode *translate_functionInvoke(Node *stmt);
 
 InterCode *translate_functionWithParamInvoke(Node *stmt);

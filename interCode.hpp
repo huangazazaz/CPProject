@@ -62,7 +62,8 @@ enum class InterCodeType
     FOR,
     DEC,
     IF_ELSE,
-    CONSTANT
+    CONSTANT,
+    TERNARY
 };
 
 class InterCode

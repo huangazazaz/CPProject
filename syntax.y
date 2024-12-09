@@ -377,15 +377,16 @@ Args: Exp COMMA Args  {$$=new Node("Args",@$.first_line); $$->push_back($1,$2,$3
     $$->intercodes = $1->intercodes;};
 
 TernaryStmt:
-      Exp TERN Exp COLON Exp {
-          $$ = new Node("TernaryStmt", @$.first_line);
-          $$->type = $3->type;
-          $$->push_back($1, $2, $3, $4, $5);
-          if (!checkBoolOperatorType($1)) {
-              invalidTernaryOperator(@1.first_line);
-          }
-          checkTypeMatch($3, $5, @3.first_line);
-      }
+    Exp TERN Exp COLON Exp {
+        $$ = new Node("TernaryStmt", @$.first_line);
+        $$->type = $3->type;
+        $$->push_back($1, $2, $3, $4, $5);
+        if (!checkBoolOperatorType($1)) {
+            invalidTernaryOperator(@1.first_line);
+        }
+        checkTypeMatch($3, $5, @3.first_line);
+        translate_Ternary($$);
+    }
     // | Exp TERN Exp error Exp {
     //       ierror(@$.first_line, IERROR_TYPE::COLON);
     //       $$ = new Node("TernaryStmt", @$.first_line);
