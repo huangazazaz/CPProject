@@ -4,6 +4,6 @@ int main(){
     int c;
     c = (a > b) ? a : b;
     int x = 5, y = 15, z = 10;
-    int largest = (x > y) ? ((x > z) ? x : z) : ((y > z) ? y : z);
+    int largest = x > y ? x > z ? x : z : y > z ? y : z;
     bool is_even = (c % 2 == 0) ? true : false;
 }
