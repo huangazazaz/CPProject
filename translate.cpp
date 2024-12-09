@@ -494,10 +494,8 @@ void translate_while(Node *const stmt)
 void translate_while_empty(Node *const stmt)
 {
     const auto newLabel1 = new_label();
-    printf("here1");
     insertAJumpLabelToExpNode(stmt, newLabel1);
     nodeInterCodeMerge(stmt, stmt->get_nodes(3));
-    printf("here2");
     insertAGotoLabelToExpNode(stmt, newLabel1);
 }
 

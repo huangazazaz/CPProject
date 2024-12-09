@@ -1245,6 +1245,8 @@ void checkReturnValueFromStmt(Type *type, Node *stmt)
     }
     else if (stmt->get_nodes(0)->name == "WHILE")
     {
-        checkReturnValueFromStmt(type, stmt->get_nodes(4));
+        if (stmt->get_nodes(0)->nodes.size() == 5)
+            checkReturnValueFromStmt(type, stmt->get_nodes(4));
+        checkReturnValueFromStmt(type, stmt->get_nodes(3));
     }
 }
