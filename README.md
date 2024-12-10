@@ -21,6 +21,5 @@ The generated parser efficiently handles errors by providing meaningful error me
 
 Our parser structure can be find in [syntax.txt](https://github.com/huangazazaz/CPProject/blob/main/syntax.txt).
 
-Now we have completed most of the syntax and lexical analysis for the language and have also implemented parts of semantic analysis. This includes type checking to ensure operations are performed on compatible types, as well as validations for undefined or redeclared variables.
+Now we have completed the syntax, lexical, semantic analysis and the generation of intercode.
 
-Currently, we are working on extending the language with features such as the ternary conditional operator (a ? b : c) and range checks. 
