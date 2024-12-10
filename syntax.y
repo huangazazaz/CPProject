@@ -394,11 +394,6 @@ TernaryStmt:
         checkTypeMatch($3, $5, @3.first_line);
         translate_Ternary($$);
     }
-    // | Exp TERN Exp error Exp {
-    //       ierror(@$.first_line, IERROR_TYPE::COLON);
-    //       $$ = new Node("TernaryStmt", @$.first_line);
-    //       $$->push_back($1, $2, $3, new Node("COLON"), $5); // 临时使用 $3 补充类型
-    //   }
     | Exp TERN Exp error {
           ierror(@$.first_line, IERROR_TYPE::EXPTERN);
           $$ = new Node("TernaryStmt", @$.first_line);
@@ -420,12 +415,6 @@ TernaryStmt:
           n->type = Type::getPrimitiveINT();
           $$->push_back($1, $2, $3, $4, n);
       }
-    // | Exp error Exp COLON Exp {
-    //       ierror(@$.first_line, IERROR_TYPE::TERN);
-    //       $$ = new Node("TernaryStmt", @$.first_line);
-    //       $$->push_back($1, new Node("TERN"), $3, $4, $5);
-    //   };
-
 
 Exp: Exp ASSIGN Exp {
     $$=new Node("Exp",@$.first_line);

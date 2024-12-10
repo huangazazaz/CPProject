@@ -24,6 +24,10 @@ PLUS_ASSIGN  -> +=
 MINUS_ASSIGN  -> -=
 MUL_ASSIGN  -> *=
 DIV_ASSIGN  -> /=
+MOD_ASSIGN  -> %=
+BOR_ASSIGN  -> |=
+BAND_ASSIGN  -> &=
+XOR_ASSIGN  -> ^=
 LT      -> <
 LE      -> <=
 GT      -> >
