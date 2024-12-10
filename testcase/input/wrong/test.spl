@@ -1,8 +1,11 @@
+int fab(int num, int num1){
+    int a = num + 1;
+    int b = num + 2;
+    return num + num;
+}
 
 int main() {
-    int num = 2;
-    if( !( 2 == 3 ) ){
-        return 1;
-    }
+    int a = (2 + 3);
+    int num = fab((((3 +( 6)))), ((((2 * 4) - 5))));
     return 0;
 }

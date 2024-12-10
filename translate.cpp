@@ -122,6 +122,10 @@ string getNameFromANode(Node *exp)
     {
         if (exp->get_nodes(0)->name == "INT")
             return std::string("#") + std::to_string(exp->interCode->SingleElement->value);
+        else if (exp->get_nodes(0)->name == "LP")
+        {
+            return getNameFromANode(exp->get_nodes(1));
+        }
         return exp->interCode->assign.left->variName;
     }
     if (!exp->nodes.empty() && exp->get_nodes(0)->name == "ID")
@@ -313,25 +317,13 @@ InterCode *translate_functionInvoke(Node *stmt)
 // maybe include write
 InterCode *translate_functionWithParamInvoke(Node *stmt)
 {
-    static auto getNameFromArgNode = [](Node *exp)
-    {
-        if (exp->interCode != nullptr)
-        {
-            if (exp->get_nodes(0)->name == "INT")
-                return std::string("#") + std::to_string(exp->interCode->SingleElement->value);
-            return exp->interCode->assign.left->variName;
-        }
-        else
-        {
-            return std::get<string>(exp->get_nodes(0)->value);
-        }
-    };
     const auto functionName = std::get<string>(stmt->get_nodes(0)->value);
-    auto *argExp = stmt->get_nodes(2, 0);
-    const auto paramName = getNameFromArgNode(argExp);
+    auto *argExp = stmt->get_nodes(2);
+    auto *exp = argExp->get_nodes(0);
     auto *const will_return = new InterCode();
     if (functionName == "write")
     {
+        const string paramName = getNameFromANode(exp);
         will_return->interCodeType = InterCodeType::WRITE;
         will_return->SingleElement = new Operand(OperandType::VARIABLE, paramName);
         stmt->interCode = will_return;
@@ -342,18 +334,19 @@ InterCode *translate_functionWithParamInvoke(Node *stmt)
     vector<InterCode *> tempIntercodes;
     do
     {
-        const auto argName = getNameFromArgNode(argExp);
+        const string argName = getNameFromANode(exp);
         auto *const arg_InterCode = new InterCode(InterCodeType::ARG);
         arg_InterCode->SingleElement = new Operand(OperandType::VARIABLE, argName);
-        argExp->interCode = arg_InterCode;
+        exp->interCode = arg_InterCode;
         // arg_InterCode->print();
-        nodeInterCodeMerge(stmt, argExp->get_nodes(0));
+        nodeInterCodeMerge(stmt, exp);
         tempIntercodes.push_back(arg_InterCode);
         if (argExp->nodes.size() == 1)
         {
             break;
         }
         argExp = argExp->get_nodes(2);
+        exp = argExp->get_nodes(0);
     } while (argExp != nullptr);
     std::for_each(tempIntercodes.crbegin(), tempIntercodes.crend(),
                   [&stmt](InterCode *ic)
