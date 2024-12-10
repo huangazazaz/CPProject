@@ -14,6 +14,8 @@ For syntax analysis, we used **Bison** to generate a parser for our language. Th
 - **Expressions**: Arithmetic operations, logical operations, and assignments.
 - **Control Flow**: `if` statements, `else` branches, and `while|for` loops.
 - **Function Handling**: Definitions, calls, and return statements.
+- **Ternary**: The ternary conditional operator (a ? b : c).
+- **Scope checking**: Check variable in different scope.
 
 The generated parser efficiently handles errors by providing meaningful error messages and recovery options.
 
