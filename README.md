@@ -23,3 +23,9 @@ Our parser structure can be find in [syntax.txt](https://github.com/huangazazaz/
 
 Now we have completed the syntax, lexical, semantic analysis and the generation of intercode.
 
+We prepared an IR simulator so that you can run your generated TACs. It is available on our GitHub repository. It is built with a Python module, urwid. If you want to run it on your own computer, make sure you have installed urwid. Note that urwid does notsupport Windows environment. Besides, this simulator is buggy. Don’t be surprised if you see abnormal behaviors :)
+
+If you want to run an IR program test_a.ir with three integers, 1, 9, and 42 as input, you may simply type the following command: 
+''' 
+irsim test_a.ir-i 1,9,42
+'''
