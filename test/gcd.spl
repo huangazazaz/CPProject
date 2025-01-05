@@ -1,0 +1,22 @@
+int gcd(int a, int b) { 
+    int t;
+    while(b!=0) {
+        t=a - (a / b) * b;
+        a=b;
+        b=t;
+    }
+    return a;
+}
+
+int main() {
+    int a = read();
+    a += 1;
+    a -= 1;
+
+    int b = read();
+    b += 1;
+    b -= 1;
+
+    int resultGCD = gcd(a + 1, b + 1);
+    write(resultGCD);
+}

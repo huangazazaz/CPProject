@@ -9,7 +9,6 @@
 
 using std::string;
 using std::unordered_map;
-extern unordered_map<string, Type *> symbolTable;
 
 void idToExp(Node *exp, Node *id);
 

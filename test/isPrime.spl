@@ -1,0 +1,16 @@
+int isPrime(int n) {
+    if (n <= 1) return 0;
+    for (int i = 2; i * i <= n; i+=1) {
+        int division = n / i;
+        if (division * i == n) return 0;
+    }
+    return 1;
+}
+
+int main() {
+    int n;
+    n = read();
+    int resultPrime = isPrime(n);
+    write(resultPrime);
+    return 0;
+}

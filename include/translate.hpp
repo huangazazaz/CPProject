@@ -10,7 +10,6 @@
 
 using std::string;
 using std::unordered_map;
-extern unordered_map<string, Type *> symbolTable;
 
 InterCode *translate_Exp(Node *exp, const string &place = "");
 

@@ -1,44 +1,57 @@
 GPP=g++
 FLEX=flex
 BISON=bison
-MAKE_PATH = bin
+SRC_PATH=./src
+TEMP_PATH=cmake-build-debug
 
 CXX_STD= -std=c++17
 CXX_DEBUG = -g
 CXX_WARN = -Wall -Wextra
-CXX_FLAGS = -O3 $(CXX_DEBUG) $(CXX_STD) $(CXX_WARN)
+CXX_HEADERS = -I./include
+CXX_FLAGS = -O3 $(CXX_DEBUG) $(CXX_STD) $(CXX_WARN) $(CXX_HEADERS)
 CPP = $(GPP) $(CXX_FLAGS)
 
-.PHONY: clean
-
-.lex:lex.l
-	$(FLEX) lex.l
-.syntax:syntax.y
-	$(BISON) -t -d -v -Wcounterexamples syntax.y
+.lex: $(SRC_PATH)/lex.l
+	@cd $(SRC_PATH);$(FLEX) lex.l
+	@cd ./../
+.syntax: $(SRC_PATH)/syntax.y
+	@cd $(SRC_PATH);$(BISON) -t -d -v syntax.y
+	@cd ./../
 .prepare:.lex .syntax
+	@mkdir -p $(TEMP_PATH)
 .node: .prepare
-	$(CPP) -c node.cpp -o node.o
-	@ar -rc libnode.a node.o
+	$(CPP) -c $(SRC_PATH)/node.cpp -o $(TEMP_PATH)/node.o
+	@ar -rc $(TEMP_PATH)/libnode.a $(TEMP_PATH)/node.o
 .ierror: .prepare
-	$(CPP) -c ierror.cpp -o ierror.o
-	@ar -rc libierror.a ierror.o
+	$(CPP) -c $(SRC_PATH)/ierror.cpp -o $(TEMP_PATH)/ierror.o
+	@ar -rc $(TEMP_PATH)/libierror.a $(TEMP_PATH)/ierror.o
 .type: .prepare
-	$(CPP) -c type.cpp -o type.o
-	@ar -rc libtype.a type.o
+	$(CPP) -c $(SRC_PATH)/type.cpp -o $(TEMP_PATH)/type.o
+	@ar -rc $(TEMP_PATH)/libtype.a $(TEMP_PATH)/type.o
 .semanticError: .prepare
-	$(CPP) -c semanticError.cpp -o semanticError.o
-	@ar -rc libsemanticError.a semanticError.o
+	$(CPP) -c $(SRC_PATH)/semanticError.cpp -o $(TEMP_PATH)/semanticError.o
+	@ar -rc $(TEMP_PATH)/libsemanticError.a $(TEMP_PATH)/semanticError.o
 .visit: .prepare
-	$(CPP) -c visitSyntaxTree.cpp -o visitSyntaxTree.o
-	@ar -rc libvisitSyntaxTree.a visitSyntaxTree.o
+	$(CPP) -c $(SRC_PATH)/visitSyntaxTree.cpp -o $(TEMP_PATH)/visitSyntaxTree.o
+	@ar -rc $(TEMP_PATH)/libvisitSyntaxTree.a $(TEMP_PATH)/visitSyntaxTree.o
 .interCode: .prepare
-	$(CPP) -c interCode.cpp -o interCode.o
-	@ar -rc libinterCode.a interCode.o
+	$(CPP) -c $(SRC_PATH)/interCode.cpp -o $(TEMP_PATH)/interCode.o
+	@ar -rc $(TEMP_PATH)/libinterCode.a $(TEMP_PATH)/interCode.o
 .translate: .prepare
-	$(CPP) -c translate.cpp -o translate.o
-	@ar -rc libtranslate.a translate.o
-splc: .node .ierror .type .semanticError .visit .interCode .translate
-	$(CPP) main.cpp -static -L. -lnode -lierror  \
+	$(CPP) -c $(SRC_PATH)/translate.cpp -o $(TEMP_PATH)/translate.o
+	@ar -rc $(TEMP_PATH)/libtranslate.a $(TEMP_PATH)/translate.o
+splc: .node .ierror .type .semanticError .visit .translate .interCode
+	@mkdir -p bin
+	touch bin/splc
+	@chmod +x bin/splc
+	$(CPP) $(SRC_PATH)/main.cpp -static \
+	-L./$(TEMP_PATH) -lnode -lierror  \
     -lvisitSyntaxTree -lsemanticError -ltype -linterCode -ltranslate -o splc
+	@cp ./splc ./bin/splc
 clean:
-	@rm -rf $(MAKE_PATH)/ lex.yy.c syntax.tab.* *.out *.o *.a *.so syntax.output splc
+	@rm -rf bin/ ./splc ./splc.out
+	@rm $(SRC_PATH)/lex.yy.c
+	@rm $(SRC_PATH)/syntax.output
+	@rm $(SRC_PATH)/syntax.tab.c
+	@rm $(SRC_PATH)/syntax.tab.h
+.PHONY: splc clean
